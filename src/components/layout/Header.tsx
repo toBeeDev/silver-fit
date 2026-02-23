@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { href: "/benefits", label: "복지혜택" },
-  { href: "/recommend", label: "맞춤추천" },
+  { href: "/recommend", label: "맞춤혜택찾기" },
+  { href: "/analysis", label: "검진결과분석" },
 ];
 
 export default function Header() {
