@@ -1,0 +1,38 @@
+name: Crawl Benefits
+
+on:
+  schedule:
+    - cron: '0 0 * * 1' # 매주 월요일 UTC 00:00 (KST 09:00)
+  workflow_dispatch: # 수동 실행
+
+permissions:
+  contents: write
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run crawler
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npm run crawl
+
+      - name: Commit & push changes
+        run: |
+          git diff --quiet src/data/benefits.json && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/benefits.json
+          git commit -m "chore: 복지혜택 데이터 자동 업데이트 $(date +%Y-%m-%d)"
+          git push
