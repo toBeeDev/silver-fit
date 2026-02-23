@@ -27,7 +27,10 @@ function loadHistory(): AnalysisRecord[] {
 }
 
 function saveHistory(records: AnalysisRecord[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records.slice(0, MAX_HISTORY)));
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(records.slice(0, MAX_HISTORY)),
+  );
 }
 
 const ANALYSIS_TAGS = [
@@ -41,6 +44,19 @@ const ANALYSIS_TAGS = [
   "암표지자",
 ];
 
+function parseBold(text: string): React.ReactNode[] {
+  const parts = text.split(/\*\*(.+?)\*\*/g);
+  return parts.map((part, i) =>
+    i % 2 === 1 ? (
+      <strong key={i} className="font-semibold">
+        {part}
+      </strong>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
+  );
+}
+
 function renderMarkdown(text: string) {
   return text.split("\n").map((line, i) => {
     if (line.startsWith("## "))
@@ -49,31 +65,43 @@ function renderMarkdown(text: string) {
           key={i}
           className="mt-8 mb-3 border-b border-border pb-2 text-[18px] font-bold text-foreground first:mt-0"
         >
-          {line.slice(3)}
+          {parseBold(line.slice(3))}
         </h2>
       );
     if (line.startsWith("### "))
       return (
-        <h3 key={i} className="mt-5 mb-2 text-[16px] font-semibold text-primary-700">
-          {line.slice(4)}
+        <h3
+          key={i}
+          className="mt-5 mb-2 text-[16px] font-semibold text-primary-700"
+        >
+          {parseBold(line.slice(4))}
         </h3>
       );
     if (line.startsWith("- "))
       return (
-        <div key={i} className="py-0.5 pl-3 text-[15px] leading-relaxed text-sub-text">
-          {line}
+        <div
+          key={i}
+          className="py-0.5 pl-3 text-[15px] leading-relaxed text-sub-text"
+        >
+          {parseBold(line)}
         </div>
       );
     if (line.includes("⚠️"))
       return (
-        <div key={i} className="text-[15px] font-semibold leading-relaxed text-amber-600">
-          {line}
+        <div
+          key={i}
+          className="text-[15px] font-semibold leading-relaxed text-amber-600"
+        >
+          {parseBold(line)}
         </div>
       );
     if (line.includes("✅"))
       return (
-        <div key={i} className="text-[15px] font-semibold leading-relaxed text-success-600">
-          {line}
+        <div
+          key={i}
+          className="text-[15px] font-semibold leading-relaxed text-success-600"
+        >
+          {parseBold(line)}
         </div>
       );
     if (line.startsWith("⚕️"))
@@ -82,13 +110,13 @@ function renderMarkdown(text: string) {
           key={i}
           className="mt-6 rounded-xl bg-primary-50 px-4 py-3 text-[13px] leading-relaxed text-sub-text"
         >
-          {line}
+          {parseBold(line)}
         </div>
       );
     if (line.trim() === "") return <div key={i} className="h-2" />;
     return (
       <div key={i} className="text-[15px] leading-relaxed text-sub-text">
-        {line}
+        {parseBold(line)}
       </div>
     );
   });
@@ -169,7 +197,10 @@ export default function HealthCheckAnalyzer() {
         id: crypto.randomUUID(),
         fileName: file.name,
         date: new Date().toISOString(),
-        summary: text.replace(/[#*\n]/g, " ").trim().slice(0, 100),
+        summary: text
+          .replace(/[#*\n]/g, " ")
+          .trim()
+          .slice(0, 100),
         result: text,
       };
       const updated = [record, ...history].slice(0, MAX_HISTORY);
@@ -177,7 +208,10 @@ export default function HealthCheckAnalyzer() {
       saveHistory(updated);
 
       setTimeout(() => {
-        resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        resultsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       }, 100);
     } catch (e) {
       setError(e instanceof Error ? e.message : "분석 중 오류가 발생했어요.");
@@ -197,7 +231,10 @@ export default function HealthCheckAnalyzer() {
     setFile(null);
     setPreview(null);
     setTimeout(() => {
-      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      resultsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }, 100);
   }
 
