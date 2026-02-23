@@ -103,14 +103,14 @@ function AnimatedHero() {
             챙기세요.
           </p>
 
-          <div className="mt-8 flex flex-row gap-3">
-            <Link href="/benefits">
-              <Button size="lg" className="gap-4" variant="outline">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link href="/benefits" className="w-full sm:w-auto">
+              <Button size="lg" className="h-[48px] w-full gap-3 px-6 text-[16px] sm:h-[60px] sm:w-auto sm:gap-4 sm:px-8 sm:text-[20px]" variant="outline">
                 전체 혜택 보기 <MoveRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link href="/recommend">
-              <Button size="lg" className="gap-4">
+            <Link href="/recommend" className="w-full sm:w-auto">
+              <Button size="lg" className="h-[48px] w-full gap-3 px-6 text-[16px] sm:h-[60px] sm:w-auto sm:gap-4 sm:px-8 sm:text-[20px]">
                 맞춤 혜택 찾기 <MoveRight className="h-4 w-4" />
               </Button>
             </Link>

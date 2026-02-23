@@ -130,7 +130,7 @@ export default function BenefitRecommender({
               </div>
 
               <div className="mt-8">
-                <Button type="submit" size="lg" className="w-full gap-4">
+                <Button type="submit" size="lg" className="h-[48px] w-full gap-3 px-6 text-[16px] sm:h-[60px] sm:gap-4 sm:px-8 sm:text-[20px]">
                   혜택 찾기 <MoveRight className="h-4 w-4" />
                 </Button>
               </div>

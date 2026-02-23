@@ -181,7 +181,7 @@ export default async function BenefitDetailPage({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button size="lg" className="w-full sm:w-auto">
+                <Button size="lg" className="h-[48px] w-full px-6 text-[16px] sm:h-[60px] sm:w-auto sm:px-8 sm:text-[20px]">
                   온라인 신청하기
                 </Button>
               </a>
