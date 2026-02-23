@@ -18,7 +18,7 @@ export default function HomePage() {
           style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
         />
         <div className="absolute inset-0 bg-background/97" />
-        <div className="relative z-10 flex h-full w-full items-center">
+        <div className="relative z-10 flex flex-1 w-full items-center">
           <AnimatedHero />
         </div>
       </section>
@@ -30,13 +30,13 @@ export default function HomePage() {
           style={{ backgroundImage: "url('/images/benefits-bg.jpg')" }}
         />
         <div className="absolute inset-0 bg-background/95" />
-        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-10 px-5 py-16 sm:flex-row sm:items-center sm:gap-16 sm:py-0">
+        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-6 px-5 py-12 sm:flex-row sm:items-center sm:gap-16 sm:py-0">
           {/* Left column — heading + CTA */}
           <div className="shrink-0 sm:w-[260px]">
             <span className="text-xs font-medium uppercase tracking-widest text-sub-text">
               Popular Benefits
             </span>
-            <h2 className="mt-4 text-4xl font-normal tracking-tight text-foreground md:text-5xl">
+            <h2 className="mt-4 text-3xl font-normal tracking-tight text-foreground sm:text-4xl md:text-5xl">
               주요
               <br />
               복지혜택

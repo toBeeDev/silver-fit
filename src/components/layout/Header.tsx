@@ -57,7 +57,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0 sm:gap-1">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -66,6 +66,7 @@ export default function Header() {
                   variant="ghost"
                   size="sm"
                   className={cn(
+                    "px-2 text-[13px] sm:px-3 sm:text-[14px]",
                     isActive
                       ? "text-primary-700 font-semibold"
                       : "text-sub-text",

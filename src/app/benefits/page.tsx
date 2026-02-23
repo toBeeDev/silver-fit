@@ -18,7 +18,7 @@ export default function BenefitsPage() {
           <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
           All Benefits
         </span>
-        <h1 className="mt-6 text-4xl font-normal tracking-tight text-foreground md:text-5xl">
+        <h1 className="mt-6 text-3xl font-normal tracking-tight text-foreground sm:text-4xl md:text-5xl">
           복지혜택 전체 목록
         </h1>
         <p className="mt-4 max-w-lg text-[17px] leading-relaxed text-sub-text">

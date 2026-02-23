@@ -125,7 +125,7 @@ export function Testimonial() {
           </div>
 
           {/* Center - main content */}
-          <div className="flex-1 py-12 sm:pl-16">
+          <div className="flex-1 py-8 sm:py-12 sm:pl-16">
             {/* Tag badge */}
             <AnimatePresence mode="wait">
               <motion.div
@@ -144,11 +144,11 @@ export function Testimonial() {
             </AnimatePresence>
 
             {/* Quote with word reveal */}
-            <div className="relative mb-12 min-h-[100px] sm:min-h-[140px]">
+            <div className="relative mb-8 min-h-[80px] sm:mb-12 sm:min-h-[140px]">
               <AnimatePresence mode="wait">
                 <motion.blockquote
                   key={activeIndex}
-                  className="text-[28px] font-normal leading-[1.3] tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-[1.15]"
+                  className="text-[22px] font-normal leading-[1.35] tracking-tight text-foreground sm:text-[28px] sm:leading-[1.3] md:text-5xl md:leading-[1.15]"
                   initial="hidden"
                   animate="visible"
                   exit="exit"
@@ -211,10 +211,10 @@ export function Testimonial() {
               </AnimatePresence>
 
               {/* Navigation */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <motion.button
                   onClick={goPrev}
-                  className="group relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-border"
+                  className="group relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-border sm:h-12 sm:w-12"
                   whileTap={{ scale: 0.95 }}
                 >
                   <svg
@@ -236,7 +236,7 @@ export function Testimonial() {
 
                 <motion.button
                   onClick={goNext}
-                  className="group relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-border"
+                  className="group relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-border sm:h-12 sm:w-12"
                   whileTap={{ scale: 0.95 }}
                 >
                   <svg
@@ -263,7 +263,7 @@ export function Testimonial() {
         {/* Bottom ticker */}
         <div className="pointer-events-none absolute -bottom-16 left-0 right-0 overflow-hidden opacity-[0.06]">
           <motion.div
-            className="flex whitespace-nowrap text-5xl font-bold tracking-tight sm:text-6xl"
+            className="flex whitespace-nowrap text-3xl font-bold tracking-tight sm:text-5xl md:text-6xl"
             animate={{ x: [0, -1000] }}
             transition={{
               duration: 20,

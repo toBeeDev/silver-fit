@@ -10,7 +10,7 @@ function AnimatedHero() {
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = useMemo(
     () => ["기초연금", "돌봄서비스", "의료지원", "교통할인", "주거지원"],
-    []
+    [],
   );
 
   useEffect(() => {
@@ -25,8 +25,8 @@ function AnimatedHero() {
   }, [titleNumber, titles]);
 
   return (
-    <div className="flex h-full w-full items-center">
-      <div className="mx-auto flex w-full max-w-5xl items-center gap-0 px-5 py-16 sm:gap-0 sm:py-0">
+    <div className="flex flex-1 w-full items-center">
+      <div className="mx-auto flex w-full max-w-5xl items-center gap-0 px-5 py-12 sm:gap-0 sm:py-0">
         {/* Left column — vertical label + keyword dots (desktop) */}
         <div className="hidden flex-col items-center justify-center border-r border-border pr-16 sm:flex">
           <motion.span
@@ -73,9 +73,9 @@ function AnimatedHero() {
             2026년 최신 복지혜택 정보
           </motion.span>
 
-          <h1 className="mt-6 text-4xl font-normal tracking-tight text-foreground md:text-6xl lg:text-7xl">
+          <h1 className="mt-6 text-3xl font-normal tracking-tight text-foreground sm:text-4xl md:text-6xl lg:text-7xl">
             어르신을 위한
-            <span className="relative block h-[1.3em] overflow-hidden md:h-[1.25em]">
+            <span className="relative block h-[1.4em] overflow-hidden sm:h-[1.3em] md:h-[1.25em]">
               {titles.map((title, index) => (
                 <motion.span
                   key={index}
@@ -117,7 +117,7 @@ function AnimatedHero() {
           </div>
 
           {/* Trust indicators — pill style */}
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-2 sm:mt-10 sm:gap-3">
             {[
               { label: "정부 공식 복지로 데이터" },
               { label: "14종+ 혜택 안내" },

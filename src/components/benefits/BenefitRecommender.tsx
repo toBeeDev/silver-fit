@@ -62,14 +62,14 @@ export default function BenefitRecommender({
           style={{ backgroundImage: "url('/images/benefits-bg.jpg')" }}
         />
         <div className="absolute inset-0 bg-background/97" />
-        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-10 px-5 py-16 sm:flex-row sm:items-center sm:gap-16 sm:py-0">
+        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-6 px-5 py-12 sm:flex-row sm:items-center sm:gap-16 sm:py-0">
           {/* Left — 헤딩 */}
           <div className="shrink-0 sm:w-[280px]">
             <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs font-medium text-sub-text">
               <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
               Personalized
             </span>
-            <h1 className="mt-6 text-4xl font-normal tracking-tight text-foreground md:text-5xl">
+            <h1 className="mt-4 text-3xl font-normal tracking-tight text-foreground sm:mt-6 sm:text-4xl md:text-5xl">
               맞춤 혜택
               <br />
               추천
@@ -147,13 +147,13 @@ export default function BenefitRecommender({
             style={{ backgroundImage: "url('/images/testimonial-bg.jpg')" }}
           />
           <div className="absolute inset-0 bg-background/95" />
-          <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-10 px-5 py-16 sm:flex-row sm:items-start sm:gap-16 sm:py-20">
+          <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-6 px-5 py-12 sm:flex-row sm:items-start sm:gap-16 sm:py-20">
             {/* Left — 헤딩 */}
             <div className="shrink-0 sm:w-[260px]">
               <span className="text-xs font-medium uppercase tracking-widest text-sub-text">
                 Results
               </span>
-              <h2 className="mt-4 text-4xl font-normal tracking-tight text-foreground md:text-5xl">
+              <h2 className="mt-4 text-3xl font-normal tracking-tight text-foreground sm:text-4xl md:text-5xl">
                 추천
                 <br />
                 혜택

@@ -36,7 +36,7 @@ export default function BenefitFilter({
               aria-selected={selected === category}
               onClick={() => onSelect(category)}
               className={cn(
-                "inline-flex min-h-[44px] items-center gap-1.5 rounded-full px-5 text-[15px] font-medium transition-all duration-200",
+                "inline-flex min-h-[44px] items-center gap-1.5 rounded-full px-3.5 text-[14px] font-medium transition-all duration-200 sm:px-5 sm:text-[15px]",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2",
                 selected === category
                   ? "bg-primary-700 text-white"
