@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "pretendard/dist/web/variable/pretendardvariable.css";
 import "./globals.css";
 import HeaderWrapper from "@/components/layout/HeaderWrapper";
@@ -31,6 +32,7 @@ export default function RootLayout({
         <div className="h-16" aria-hidden="true" />
         <main>{children}</main>
         <FooterWrapper />
+        <Analytics />
       </body>
     </html>
   );
