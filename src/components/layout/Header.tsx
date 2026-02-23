@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+import { Menu, X } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/benefits", label: "복지혜택" },
@@ -14,6 +15,7 @@ const NAV_ITEMS = [
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -37,11 +39,24 @@ export default function Header() {
     };
   }, []);
 
+  // 라우트 변경 시 메뉴 닫기
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  // 메뉴 열릴 때 스크롤 잠금
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
+  const toggleMenu = useCallback(() => setMenuOpen((v) => !v), []);
+
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled ? "backdrop-blur-md" : "bg-transparent",
+        menuOpen ? "bg-background" : scrolled ? "backdrop-blur-md" : "bg-transparent",
       )}
     >
       <nav
@@ -57,7 +72,8 @@ export default function Header() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-0 sm:gap-1">
+        {/* Desktop nav */}
+        <div className="hidden items-center gap-1 sm:flex">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -66,7 +82,7 @@ export default function Header() {
                   variant="ghost"
                   size="sm"
                   className={cn(
-                    "px-2 text-[13px] sm:px-3 sm:text-[14px]",
+                    "px-3 text-[15px]",
                     isActive
                       ? "text-primary-700 font-semibold"
                       : "text-sub-text",
@@ -78,7 +94,55 @@ export default function Header() {
             );
           })}
         </div>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={toggleMenu}
+          className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 sm:hidden"
+          aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
+          aria-expanded={menuOpen}
+        >
+          {menuOpen ? (
+            <X className="h-5 w-5 text-foreground" />
+          ) : (
+            <Menu className="h-5 w-5 text-foreground" />
+          )}
+        </button>
       </nav>
+
+      {/* Mobile menu overlay */}
+      <div
+        className={cn(
+          "fixed inset-0 top-16 z-40 bg-background backdrop-blur-sm transition-all duration-300 sm:hidden",
+          menuOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none",
+        )}
+      >
+        <div className="flex flex-col gap-1 px-5 pt-6">
+          {NAV_ITEMS.map((item) => {
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-colors",
+                  isActive
+                    ? "bg-primary-50 text-primary-700"
+                    : "text-foreground hover:bg-primary-50/50",
+                )}
+              >
+                {isActive && (
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
+                )}
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </header>
   );
 }
