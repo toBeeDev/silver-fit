@@ -39,10 +39,8 @@ const BenefitSchema = z.object({
   amount: z.string().min(1),
   status: z.enum(["진행중", "예정", "마감"]),
   application: z.object({
-    methods: z
-      .array(z.enum(["온라인", "방문", "전화", "우편"]))
-      .min(1),
-    url: z.string().url().nullable(),
+    methods: z.array(z.string().min(1)),
+    url: z.string().nullable(),
     phone: z.string().nullable(),
     documents: z.array(z.string()),
   }),
@@ -72,6 +70,8 @@ export function validateBenefit(
   if (app) {
     if (app["url"] === "" || app["url"] === "없음") app["url"] = null;
     if (app["phone"] === "" || app["phone"] === "없음") app["phone"] = null;
+    const methods = app["methods"] as string[] | undefined;
+    if (!methods || methods.length === 0) app["methods"] = ["방문"];
   }
 
   if (patched["endDate"] === "" || patched["endDate"] === "없음") {
