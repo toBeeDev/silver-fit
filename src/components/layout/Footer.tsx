@@ -13,7 +13,7 @@ export default function Footer() {
       socialLinks={[
         {
           icon: <Mail className="h-5 w-5" />,
-          href: "mailto:help@silverfit.kr",
+          href: "mailto:bee.devlog@gmail.com",
           label: "이메일 문의",
         },
       ]}
