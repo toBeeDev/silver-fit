@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/benefits", label: "복지혜택" },
   { href: "/recommend", label: "맞춤혜택찾기" },
   { href: "/analysis", label: "검진결과분석" },
+  { href: "/insurance", label: "보험상품찾기" },
 ];
 
 export default function Header() {
