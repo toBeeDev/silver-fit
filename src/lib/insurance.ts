@@ -1,20 +1,13 @@
 import type {
   InsuranceProduct,
-  InsuranceFilter,
   FssAnnuityBase,
   FssAnnuityOption,
 } from "@/types/insurance";
-import data from "@/data/insurance-products.json";
-
-const staticProducts = data as InsuranceProduct[];
-
-/** 정적 보험 상품 데이터 로드 (간병·실손·치매) */
-export function getStaticInsuranceProducts(): InsuranceProduct[] {
-  return staticProducts;
-}
+import fs from "fs";
+import path from "path";
 
 /** 금감원 API 응답 → InsuranceProduct 변환 */
-export function transformFssProduct(
+function transformFssProduct(
   base: FssAnnuityBase,
   option?: FssAnnuityOption,
 ): InsuranceProduct {
@@ -33,7 +26,7 @@ export function transformFssProduct(
     companyName: base.kor_co_nm,
     productName: base.fin_prdt_nm,
     monthlyPremium: option?.mon_paym_atm
-      ? `${Number(option.mon_paym_atm).toLocaleString()}원`
+      ? `월 ${Number(option.mon_paym_atm)}만원`
       : "상품별 상이",
     coverage: `${base.pnsn_kind_nm} / ${base.prdt_type_nm}`,
     coverageAmount: option?.avg_prft_rate
@@ -51,23 +44,37 @@ export function transformFssProduct(
   };
 }
 
-/** 보험 상품 필터링 */
-export function filterInsuranceProducts(
-  products: InsuranceProduct[],
-  filter: InsuranceFilter,
-): InsuranceProduct[] {
-  return products.filter((p) => {
-    if (
-      filter.category &&
-      filter.category !== "전체" &&
-      p.category !== filter.category
-    )
-      return false;
-    if (
-      filter.age !== undefined &&
-      (p.minAge > filter.age || p.maxAge < filter.age)
-    )
-      return false;
-    return true;
-  });
+/** FSS 캐시 JSON에서 연금저축보험 로드 */
+function loadFssProducts(): InsuranceProduct[] {
+  try {
+    const filePath = path.join(
+      process.cwd(),
+      "src",
+      "data",
+      "fss-annuity-products.json",
+    );
+    const raw = fs.readFileSync(filePath, "utf-8");
+    const cache = JSON.parse(raw) as {
+      baseList: FssAnnuityBase[];
+      optionList: FssAnnuityOption[];
+    };
+
+    return (cache.baseList ?? [])
+      .filter((base) => !!base.sale_strt_day)
+      .map((base) => {
+        const option = cache.optionList?.find(
+          (o) => o.fin_prdt_cd === base.fin_prdt_cd,
+        );
+        return transformFssProduct(base, option);
+      });
+  } catch {
+    // 파일 없으면 빈 배열
+    return [];
+  }
 }
+
+/** 전체 보험 상품 로드 (FSS 캐시) */
+export function getAllInsuranceProducts(): InsuranceProduct[] {
+  return loadFssProducts();
+}
+

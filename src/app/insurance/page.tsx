@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getStaticInsuranceProducts } from "@/lib/insurance";
+import { getAllInsuranceProducts } from "@/lib/insurance";
 import InsuranceCompareClient from "./InsuranceCompareClient";
 
 export const metadata: Metadata = {
@@ -9,6 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default function InsurancePage() {
-  const staticProducts = getStaticInsuranceProducts();
-  return <InsuranceCompareClient staticProducts={staticProducts} />;
+  const products = getAllInsuranceProducts();
+  return <InsuranceCompareClient products={products} />;
 }

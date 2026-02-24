@@ -1,9 +1,5 @@
 /** 보험 상품 카테고리 */
-export type InsuranceCategory =
-  | "간병보험"
-  | "실손보험"
-  | "치매보험"
-  | "연금저축보험";
+export type InsuranceCategory = "연금저축보험";
 
 /** 보험 상품 타입 */
 export interface InsuranceProduct {
@@ -19,7 +15,7 @@ export interface InsuranceProduct {
   minAge: number;
   maxAge: number;
   websiteUrl: string;
-  dataSource: "fss" | "manual";
+  dataSource: "fss";
   updatedAt: string;
 }
 
