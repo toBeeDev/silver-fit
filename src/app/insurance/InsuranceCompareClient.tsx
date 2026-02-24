@@ -1,81 +1,66 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import InsuranceFilter from "@/components/insurance/InsuranceFilter";
 import InsuranceProductCard from "@/components/insurance/InsuranceProductCard";
-import {
-  filterInsuranceProducts,
-  transformFssProduct,
-} from "@/lib/insurance";
-import type {
-  InsuranceProduct,
-  InsuranceCategory,
-  FssApiResponse,
-} from "@/types/insurance";
+import { filterInsuranceProducts } from "@/lib/insurance-filter";
+import type { InsuranceProduct, InsuranceCategory } from "@/types/insurance";
 import { cn } from "@/lib/utils";
 
 const AGE_PRESETS = [60, 65, 70, 75] as const;
+const PAGE_SIZE = 10;
 
 interface InsuranceCompareClientProps {
-  staticProducts: InsuranceProduct[];
+  products: InsuranceProduct[];
 }
 
 export default function InsuranceCompareClient({
-  staticProducts,
+  products,
 }: InsuranceCompareClientProps) {
   const [selectedCategory, setSelectedCategory] = useState<
     InsuranceCategory | "전체"
   >("전체");
   const [selectedAge, setSelectedAge] = useState<number | undefined>(undefined);
-  const [fssProducts, setFssProducts] = useState<InsuranceProduct[]>([]);
-  const [fssLoading, setFssLoading] = useState(false);
-  const [fssError, setFssError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // FSS 데이터 로드 (연금저축보험)
-  useEffect(() => {
-    if (fssProducts.length > 0) return;
-    if (
-      selectedCategory !== "전체" &&
-      selectedCategory !== "연금저축보험"
-    )
-      return;
+  function scrollToResults() {
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
+  }
 
-    async function fetchFss() {
-      setFssLoading(true);
-      setFssError("");
-      try {
-        const res = await fetch("/api/fss?topFinGrpNo=050000&pageNo=1");
-        if (!res.ok) throw new Error("금감원 데이터를 불러오지 못했습니다.");
-        const data: FssApiResponse = await res.json();
-        if (data.result?.err_cd && data.result.err_cd !== "000") {
-          throw new Error(
-            data.result.err_msg || "금감원 API 오류가 발생했습니다.",
-          );
-        }
-        const products = (data.result?.baseList ?? []).map((base) => {
-          const option = data.result?.optionList?.find(
-            (o) => o.fin_prdt_cd === base.fin_prdt_cd,
-          );
-          return transformFssProduct(base, option);
-        });
-        setFssProducts(products);
-      } catch (e) {
-        setFssError(
-          e instanceof Error ? e.message : "데이터 로딩 오류",
-        );
-      }
-      setFssLoading(false);
-    }
+  function handleCategoryChange(category: InsuranceCategory | "전체") {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+    scrollToResults();
+  }
 
-    fetchFss();
-  }, [selectedCategory, fssProducts.length]);
+  function handleAgeChange(age: number | undefined) {
+    setSelectedAge(age);
+    setCurrentPage(1);
+    scrollToResults();
+  }
 
-  const allProducts = [...staticProducts, ...fssProducts];
-  const filtered = filterInsuranceProducts(allProducts, {
+  function handlePageChange(page: number) {
+    setCurrentPage(page);
+    scrollToResults();
+  }
+
+  const filtered = filterInsuranceProducts(products, {
     category: selectedCategory,
     age: selectedAge,
   });
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paged = useMemo(
+    () => filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [filtered, currentPage],
+  );
 
   return (
     <div className="-mt-16">
@@ -96,7 +81,7 @@ export default function InsuranceCompareClient({
             <h1 className="mt-4 text-3xl font-normal tracking-tight text-foreground sm:mt-6 sm:text-4xl md:text-5xl">
               보험상품
               <br />
-              비교
+              찾기
             </h1>
             <p className="mt-4 text-[17px] leading-relaxed text-sub-text">
               어르신을 위한 보험상품을
@@ -130,7 +115,7 @@ export default function InsuranceCompareClient({
               </p>
               <InsuranceFilter
                 selected={selectedCategory}
-                onSelect={setSelectedCategory}
+                onSelect={handleCategoryChange}
               />
             </div>
 
@@ -140,7 +125,7 @@ export default function InsuranceCompareClient({
               </p>
               <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => setSelectedAge(undefined)}
+                  onClick={() => handleAgeChange(undefined)}
                   className={cn(
                     "inline-flex min-h-[44px] items-center rounded-full px-4 text-[14px] font-medium transition-all duration-200 sm:px-5 sm:text-[15px]",
                     selectedAge === undefined
@@ -153,7 +138,7 @@ export default function InsuranceCompareClient({
                 {AGE_PRESETS.map((age) => (
                   <button
                     key={age}
-                    onClick={() => setSelectedAge(age)}
+                    onClick={() => handleAgeChange(age)}
                     className={cn(
                       "inline-flex min-h-[44px] items-center rounded-full px-4 text-[14px] font-medium transition-all duration-200 sm:px-5 sm:text-[15px]",
                       selectedAge === age
@@ -193,8 +178,6 @@ export default function InsuranceCompareClient({
               Results
             </span>
             <h2 className="mt-4 text-3xl font-normal tracking-tight text-foreground sm:text-4xl md:text-5xl">
-              비교
-              <br />
               결과
             </h2>
             <p className="mt-4 text-[17px] leading-relaxed text-sub-text">
@@ -203,34 +186,28 @@ export default function InsuranceCompareClient({
               찾았습니다
             </p>
 
-            <div className="mt-6">
+            <div className="mt-6 flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-medium text-sub-text">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
-                {filtered.length}건
+                총 {filtered.length}건
               </span>
+              {totalPages > 1 && (
+                <span className="text-xs text-sub-text">
+                  {currentPage} / {totalPages} 페이지
+                </span>
+              )}
             </div>
 
             {/* 데이터 출처 */}
             <div className="mt-6 flex flex-col gap-1 text-[13px] leading-relaxed text-sub-text">
-              <p>* 연금저축: 금감원 금융상품한눈에</p>
-              <p>* 기타: 각 보험사 공시 (2026.02)</p>
+              <p>* 금감원 금융상품한눈에 기반</p>
+              <p>* 공시기준: 2020.10</p>
             </div>
           </div>
 
-          {/* Right — 카드 그리드 */}
+          {/* Right — 리스트 */}
           <div className="w-full flex-1">
-            {fssLoading && (
-              <div className="mb-4 rounded-xl border border-border bg-white px-4 py-3 text-center text-[14px] text-sub-text">
-                금감원 데이터를 불러오는 중...
-              </div>
-            )}
-            {fssError && (
-              <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[14px] text-red-700">
-                {fssError}
-              </div>
-            )}
-
-            {filtered.length === 0 && !fssLoading ? (
+            {filtered.length === 0 ? (
               <div className="rounded-xl border border-border bg-white px-6 py-12 text-center">
                 <p className="text-[17px] font-medium text-foreground">
                   조건에 맞는 상품이 없습니다
@@ -240,11 +217,78 @@ export default function InsuranceCompareClient({
                 </p>
               </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2">
-                {filtered.map((product) => (
-                  <InsuranceProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                <div>
+                  {paged.map((product, i) => (
+                    <InsuranceProductCard
+                      key={product.id}
+                      product={product}
+                      index={(currentPage - 1) * PAGE_SIZE + i}
+                    />
+                  ))}
+                </div>
+
+                {/* 페이지네이션 */}
+                {totalPages > 1 && (
+                  <nav
+                    aria-label="페이지 이동"
+                    className="mt-8 flex items-center justify-center gap-1"
+                  >
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full text-sub-text transition-colors hover:bg-white/60 disabled:opacity-30 disabled:hover:bg-transparent"
+                      aria-label="이전 페이지"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter((page) => {
+                        if (totalPages <= 7) return true;
+                        if (page === 1 || page === totalPages) return true;
+                        return Math.abs(page - currentPage) <= 2;
+                      })
+                      .reduce<(number | "...")[]>((acc, page, idx, arr) => {
+                        if (idx > 0 && page - (arr[idx - 1] ?? 0) > 1) acc.push("...");
+                        acc.push(page);
+                        return acc;
+                      }, [])
+                      .map((item, idx) =>
+                        item === "..." ? (
+                          <span
+                            key={`dot-${idx}`}
+                            className="inline-flex h-10 w-6 items-center justify-center text-[14px] text-sub-text"
+                          >
+                            ...
+                          </span>
+                        ) : (
+                          <button
+                            key={item}
+                            onClick={() => handlePageChange(item)}
+                            className={cn(
+                              "inline-flex h-10 min-w-10 items-center justify-center rounded-full text-[14px] font-medium transition-colors",
+                              currentPage === item
+                                ? "bg-primary-700 text-white"
+                                : "text-sub-text hover:bg-white/60",
+                            )}
+                          >
+                            {item}
+                          </button>
+                        ),
+                      )}
+
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full text-sub-text transition-colors hover:bg-white/60 disabled:opacity-30 disabled:hover:bg-transparent"
+                      aria-label="다음 페이지"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </nav>
+                )}
+              </>
             )}
           </div>
         </div>
