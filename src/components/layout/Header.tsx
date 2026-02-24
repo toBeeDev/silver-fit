@@ -44,11 +44,6 @@ export default function Header() {
     setMenuOpen(false);
   }, [pathname]);
 
-  // 메뉴 열릴 때 스크롤 잠금
-  useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [menuOpen]);
 
   const toggleMenu = useCallback(() => setMenuOpen((v) => !v), []);
 
@@ -110,16 +105,14 @@ export default function Header() {
         </button>
       </nav>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile dropdown menu */}
       <div
         className={cn(
-          "fixed inset-0 top-16 z-40 bg-background backdrop-blur-sm transition-all duration-300 sm:hidden",
-          menuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none",
+          "overflow-hidden border-b border-border bg-background transition-all duration-300 ease-in-out sm:hidden",
+          menuOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0 border-transparent",
         )}
       >
-        <div className="flex flex-col gap-1 px-5 pt-6">
+        <div className="flex flex-col gap-1 px-5 pb-4 pt-2">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -128,10 +121,10 @@ export default function Header() {
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-colors",
+                  "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[15px] font-medium transition-colors",
                   isActive
                     ? "bg-primary-50 text-primary-700"
-                    : "text-foreground hover:bg-primary-50/50",
+                    : "text-sub-text hover:bg-primary-50/50 hover:text-foreground",
                 )}
               >
                 {isActive && (
