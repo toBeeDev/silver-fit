@@ -1,0 +1,95 @@
+"use client";
+
+import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+export interface CompareItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+}
+
+interface CompareBarProps {
+  items: CompareItem[];
+  maxItems?: number;
+  onRemove: (id: string) => void;
+  onCompare: () => void;
+  onClear: () => void;
+  compareLabel?: string;
+  emptyLabel?: string;
+}
+
+export default function CompareBar({
+  items,
+  maxItems = 2,
+  onRemove,
+  onCompare,
+  onClear,
+  compareLabel = "VS 비교하기",
+  emptyLabel = "상품을 1개 더 선택하세요",
+}: CompareBarProps) {
+  return (
+    <AnimatePresence>
+      {items.length > 0 && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-white/95 shadow-lg backdrop-blur-sm"
+        >
+          <div className="mx-auto flex max-w-5xl items-center gap-4 px-5 py-3">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex min-w-0 items-center gap-2 rounded-lg bg-primary-50 px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    {item.subtitle && (
+                      <p className="truncate text-[12px] text-sub-text">
+                        {item.subtitle}
+                      </p>
+                    )}
+                    <p className="truncate text-[13px] font-medium text-foreground">
+                      {item.title}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => onRemove(item.id)}
+                    className="shrink-0 rounded-full p-0.5 text-sub-text transition-colors hover:bg-primary-100 hover:text-foreground"
+                    aria-label={`${item.title} 선택 해제`}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ))}
+
+              {items.length < maxItems && (
+                <div className="flex h-[44px] items-center rounded-lg border-2 border-dashed border-border px-4 text-[13px] text-sub-text">
+                  {emptyLabel}
+                </div>
+              )}
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                onClick={onClear}
+                className="rounded-lg px-3 py-2 text-[13px] text-sub-text transition-colors hover:bg-gray-100"
+              >
+                초기화
+              </button>
+              <button
+                onClick={onCompare}
+                disabled={items.length < maxItems}
+                className="inline-flex min-h-[44px] items-center rounded-xl bg-primary-700 px-5 text-[15px] font-medium text-white transition-colors hover:bg-primary-800 disabled:bg-gray-200 disabled:text-gray-400"
+              >
+                {compareLabel}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
