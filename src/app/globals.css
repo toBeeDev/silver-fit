@@ -9,6 +9,7 @@
   --color-primary-200: #BFDBFE;
   --color-primary-600: #2563EB;
   --color-primary-700: #1D4ED8;
+  --color-primary-800: #1E40AF;
   --color-primary-900: #1E3A8A;
   --color-accent-400: #FBBF24;
   --color-accent-500: #F59E0B;
@@ -21,6 +22,46 @@
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
   --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  /* ── 반응형 타이포그래피 토큰 (모바일 기본) ── */
+  --text-hero: 28px;
+  --text-page-title: 22px;
+  --text-section-title: 17px;
+  --text-card-title: 15px;
+  --text-body: 14px;
+  --text-body-sm: 13px;
+  --text-caption: 11px;
+  --text-label: 12px;
+  --text-btn: 14px;
+  --text-number: 16px;
+
+  /* ── 반응형 간격 토큰 (모바일 기본) ── */
+  --space-page-x: 16px;
+  --space-page-y: 32px;
+  --space-section-gap: 24px;
+  --space-card-pad: 14px;
+  --min-tap: 44px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --text-hero: 48px;
+    --text-page-title: 30px;
+    --text-section-title: 20px;
+    --text-card-title: 18px;
+    --text-body: 15px;
+    --text-body-sm: 14px;
+    --text-caption: 12px;
+    --text-label: 13px;
+    --text-btn: 15px;
+    --text-number: 22px;
+
+    --space-page-x: 20px;
+    --space-page-y: 48px;
+    --space-section-gap: 40px;
+    --space-card-pad: 20px;
+    --min-tap: 48px;
+  }
 }
 
 @theme inline {
@@ -31,6 +72,7 @@
   --color-primary-200: var(--color-primary-200);
   --color-primary-600: var(--color-primary-600);
   --color-primary-700: var(--color-primary-700);
+  --color-primary-800: var(--color-primary-800);
   --color-primary-900: var(--color-primary-900);
   --color-accent-400: var(--color-accent-400);
   --color-accent-500: var(--color-accent-500);
@@ -39,12 +81,31 @@
   --color-sub-text: var(--color-sub-text);
   --color-border: var(--color-border);
   --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+
+  /* ── 반응형 타이포그래피 유틸리티 ── */
+  --text-hero: var(--text-hero);
+  --text-page-title: var(--text-page-title);
+  --text-section-title: var(--text-section-title);
+  --text-card-title: var(--text-card-title);
+  --text-body: var(--text-body);
+  --text-body-sm: var(--text-body-sm);
+  --text-caption: var(--text-caption);
+  --text-label: var(--text-label);
+  --text-btn: var(--text-btn);
+  --text-number: var(--text-number);
+
+  /* ── 반응형 간격 유틸리티 ── */
+  --spacing-page-x: var(--space-page-x);
+  --spacing-page-y: var(--space-page-y);
+  --spacing-section-gap: var(--space-section-gap);
+  --spacing-card-pad: var(--space-card-pad);
+  --spacing-min-tap: var(--min-tap);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-size: 17px;
+  font-size: var(--text-body);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

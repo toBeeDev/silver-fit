@@ -21,8 +21,8 @@ export default memo(function InsuranceProductCard({
   const logoSrc = `/images/company/${product.finCoNo}.png`;
 
   return (
-    <div className="flex items-center gap-3 border-b border-border/60 py-6 transition-colors first:border-t hover:bg-white/40 sm:gap-4 sm:py-7">
-      {/* 최좌측: 비교 선택 (원형, 수직 중앙) */}
+    <div className="flex items-center gap-3 border-b border-border/60 py-(--space-card-pad) transition-colors first:border-t hover:bg-white/40">
+      {/* 비교 선택 */}
       <button
         type="button"
         onClick={(e) => {
@@ -31,7 +31,8 @@ export default memo(function InsuranceProductCard({
           onToggle?.(product.id);
         }}
         className={cn(
-          "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all sm:h-8 sm:w-8",
+          "flex shrink-0 items-center justify-center rounded-full border transition-all",
+          "h-(--min-tap) w-(--min-tap) [--min-tap:28px] sm:[--min-tap:32px]",
           selected
             ? "border-primary-700 bg-primary-700 text-white"
             : "border-border bg-white text-gray-300 hover:border-primary-300 hover:text-primary-400",
@@ -47,11 +48,11 @@ export default memo(function InsuranceProductCard({
         className="min-w-0 flex-1"
       >
         {/* 1행: 상품명 + 수익률 */}
-        <div className="flex items-center gap-2.5">
-          <h3 className="min-w-0 flex-1 truncate text-[17px] font-semibold leading-snug text-foreground sm:text-[18px]">
+        <div className="flex items-center gap-2">
+          <h3 className="min-w-0 flex-1 truncate text-(--text-card-title) font-semibold leading-snug text-foreground">
             {product.productName}
           </h3>
-          <span className="shrink-0 text-[20px] font-bold tabular-nums text-foreground sm:text-[22px]">
+          <span className="shrink-0 text-(--text-number) font-bold tabular-nums text-foreground">
             {product.avgPrftRate != null ? `${product.avgPrftRate}%` : "-"}
           </span>
         </div>
@@ -65,17 +66,17 @@ export default memo(function InsuranceProductCard({
             height={18}
             className="h-[18px] w-[18px] shrink-0 rounded-full"
           />
-          <p className="text-[14px] leading-snug text-sub-text">
+          <p className="text-(--text-body-sm) leading-snug text-sub-text">
             {product.companyName}
           </p>
         </div>
 
         {/* 3행: 태그 */}
-        <div className="mt-2 flex flex-wrap items-center gap-1.5">
-          <span className="inline-flex items-center rounded-full border border-border/60 px-2.5 py-0.5 text-[11px] font-medium text-sub-text">
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+          <span className="inline-flex items-center rounded-full border border-border/60 px-2 py-0.5 text-(--text-caption) font-medium text-sub-text">
             {product.category}
           </span>
-          <span className="inline-flex items-center rounded-full border border-border/60 px-2.5 py-0.5 text-[11px] font-medium text-sub-text">
+          <span className="inline-flex items-center rounded-full border border-border/60 px-2 py-0.5 text-(--text-caption) font-medium text-sub-text">
             {product.coverage.split(" / ")[1] ?? product.coverage}
           </span>
         </div>

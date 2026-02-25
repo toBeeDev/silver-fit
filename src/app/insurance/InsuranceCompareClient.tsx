@@ -152,19 +152,19 @@ export default function InsuranceCompareClient({
           style={{ backgroundImage: "url('/images/benefits-bg.jpg')" }}
         />
         <div className="absolute inset-0 bg-background/97" />
-        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-6 px-5 py-12 sm:flex-row sm:items-center sm:gap-16 sm:py-0">
+        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-6 px-(--space-page-x) py-(--space-page-y) sm:flex-row sm:items-center sm:gap-16 sm:py-0">
           {/* Left */}
           <div className="shrink-0 sm:w-[280px]">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs font-medium text-sub-text">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-(--text-caption) font-medium text-sub-text">
               <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
               Insurance Compare
             </span>
-            <h1 className="mt-4 text-3xl font-normal tracking-tight text-foreground sm:mt-6 sm:text-4xl md:text-5xl">
+            <h1 className="mt-4 text-(--text-hero) font-normal tracking-tight text-foreground sm:mt-6">
               보험상품
               <br />
               찾기
             </h1>
-            <p className="mt-4 text-[17px] leading-relaxed text-sub-text">
+            <p className="mt-4 text-(--text-body) leading-relaxed text-sub-text">
               어르신을 위한 보험상품을
               <br className="hidden sm:block" />
               한눈에 비교해보세요
@@ -179,7 +179,7 @@ export default function InsuranceCompareClient({
               ].map((text) => (
                 <span
                   key={text}
-                  className="inline-flex items-center gap-2 text-[14px] text-sub-text"
+                  className="inline-flex items-center gap-2 text-(--text-body) text-sub-text"
                 >
                   <span className="h-1 w-1 rounded-full bg-primary-600" />
                   {text}
@@ -191,7 +191,7 @@ export default function InsuranceCompareClient({
           {/* Right — 필터 */}
           <div className="w-full flex-1">
             <div className="mb-6">
-              <p className="mb-3 text-[14px] font-medium text-foreground">
+              <p className="mb-3 text-(--text-body) font-medium text-foreground">
                 보험 유형
               </p>
               <InsuranceFilter
@@ -201,14 +201,14 @@ export default function InsuranceCompareClient({
             </div>
 
             <div>
-              <p className="mb-3 text-[14px] font-medium text-foreground">
+              <p className="mb-3 text-(--text-body) font-medium text-foreground">
                 나이 (만)
               </p>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => handleAgeChange(undefined)}
                   className={cn(
-                    "inline-flex min-h-[44px] items-center rounded-full px-4 text-[14px] font-medium transition-all duration-200 sm:px-5 sm:text-[15px]",
+                    "inline-flex min-h-(--min-tap) items-center rounded-full px-4 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
                     selectedAge === undefined
                       ? "bg-primary-700 text-white"
                       : "border border-border text-sub-text hover:border-foreground/30 hover:text-foreground",
@@ -221,7 +221,7 @@ export default function InsuranceCompareClient({
                     key={age}
                     onClick={() => handleAgeChange(age)}
                     className={cn(
-                      "inline-flex min-h-[44px] items-center rounded-full px-4 text-[14px] font-medium transition-all duration-200 sm:px-5 sm:text-[15px]",
+                      "inline-flex min-h-(--min-tap) items-center rounded-full px-4 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
                       selectedAge === age
                         ? "bg-primary-700 text-white"
                         : "border border-border text-sub-text hover:border-foreground/30 hover:text-foreground",
@@ -235,7 +235,7 @@ export default function InsuranceCompareClient({
 
             {/* 검색바 */}
             <div className="mt-6">
-              <p className="mb-3 text-[14px] font-medium text-foreground">
+              <p className="mb-3 text-(--text-body) font-medium text-foreground">
                 상품 검색
               </p>
               <form
@@ -256,12 +256,12 @@ export default function InsuranceCompareClient({
                       setCurrentPage(1);
                     }}
                     placeholder="상품명 또는 회사명 검색"
-                    className="h-[44px] w-full rounded-xl border border-border bg-white pl-10 pr-4 text-[15px] text-foreground placeholder:text-sub-text/50 focus:border-primary-400 focus:outline-none"
+                    className="h-(--min-tap) w-full rounded-xl border border-border bg-white pl-10 pr-4 text-(--text-body) text-foreground placeholder:text-sub-text/50 focus:border-primary-400 focus:outline-none"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="inline-flex h-[44px] shrink-0 items-center rounded-xl bg-primary-700 px-5 text-[15px] font-medium text-white transition-colors hover:bg-primary-800"
+                  className="inline-flex h-(--min-tap) shrink-0 items-center rounded-xl bg-primary-700 px-4 text-(--text-btn) font-medium text-white transition-colors hover:bg-primary-800 sm:px-5"
                 >
                   검색
                 </button>
@@ -269,7 +269,7 @@ export default function InsuranceCompareClient({
             </div>
 
             {/* 면책 안내 */}
-            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[14px] leading-relaxed text-amber-800">
+            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-(--text-body) leading-relaxed text-amber-800">
               ⚠️ 보험료는 가입 조건에 따라 달라질 수 있습니다. 정확한 보험료는
               각 보험사에 문의하세요.
             </div>
@@ -278,22 +278,22 @@ export default function InsuranceCompareClient({
       </section>
 
       {/* 결과 리스트 */}
-      <div ref={resultsRef} className="mx-auto max-w-3xl px-5 py-10">
-        {/* 툴바: 건수 + 정렬 + 비교 안내 */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span className="text-[15px] font-semibold text-foreground">
+      <div ref={resultsRef} className="mx-auto max-w-3xl px-(--space-page-x) py-(--space-page-y)">
+        {/* 툴바: 건수 + 정렬 */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-(--text-body) font-semibold text-foreground">
               총 {filtered.length}건
             </span>
             {totalPages > 1 && (
-              <span className="text-[13px] text-sub-text">
+              <span className="text-(--text-body-sm) text-sub-text">
                 {currentPage} / {totalPages} 페이지
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <ArrowUpDown className="h-3.5 w-3.5 text-sub-text" />
+          <div className="flex items-center gap-1">
+            <ArrowUpDown className="hidden h-3.5 w-3.5 text-sub-text sm:block" />
             {SORT_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
@@ -302,7 +302,7 @@ export default function InsuranceCompareClient({
                   setCurrentPage(1);
                 }}
                 className={cn(
-                  "rounded-full px-3 py-1.5 text-[13px] font-medium transition-all",
+                  "rounded-full px-2.5 py-1 text-(--text-label) font-medium transition-all sm:px-3 sm:py-1.5",
                   sortOrder === opt.value
                     ? "bg-primary-700 text-white"
                     : "text-sub-text hover:text-foreground",
@@ -315,8 +315,8 @@ export default function InsuranceCompareClient({
         </div>
 
         {/* 안내 */}
-        <div className="mt-3 flex flex-col gap-1.5 text-[12px] text-sub-text">
-          <p className="inline-flex items-center gap-1.5 text-[13px] font-medium text-primary-700">
+        <div className="mt-3 flex flex-col gap-1.5 text-(--text-caption) text-sub-text">
+          <p className="inline-flex items-center gap-1.5 text-(--text-body-sm) font-medium text-primary-700">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-100 text-[10px]">VS</span>
             체크 버튼으로 2개 상품을 선택하면 비교가 가능합니다
           </p>
@@ -327,10 +327,10 @@ export default function InsuranceCompareClient({
         <div className="mt-4">
           {filtered.length === 0 ? (
             <div className="rounded-xl border border-border bg-white px-6 py-16 text-center">
-              <p className="text-[17px] font-medium text-foreground">
+              <p className="text-(--text-section-title) font-medium text-foreground">
                 조건에 맞는 상품이 없습니다
               </p>
-              <p className="mt-2 text-[15px] text-sub-text">
+              <p className="mt-2 text-(--text-body) text-sub-text">
                 필터 조건을 변경해보세요
               </p>
             </div>

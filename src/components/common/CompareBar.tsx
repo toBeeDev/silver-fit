@@ -26,7 +26,7 @@ export default function CompareBar({
   onCompare,
   onClear,
   compareLabel = "VS 비교하기",
-  emptyLabel = "상품을 1개 더 선택하세요",
+  emptyLabel = "+1 선택",
 }: CompareBarProps) {
   return (
     <AnimatePresence>
@@ -38,20 +38,20 @@ export default function CompareBar({
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-white/95 shadow-lg backdrop-blur-sm"
         >
-          <div className="mx-auto flex max-w-5xl items-center gap-4 px-5 py-3">
-            <div className="flex min-w-0 flex-1 items-center gap-3">
+          <div className="mx-auto flex max-w-5xl items-center gap-2 px-(--space-page-x) py-2.5 sm:gap-4 sm:py-3">
+            <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex min-w-0 items-center gap-2 rounded-lg bg-primary-50 px-3 py-2"
+                  className="flex min-w-0 max-w-[140px] items-center gap-1.5 rounded-lg bg-primary-50 px-2 py-1.5 sm:max-w-none sm:gap-2 sm:px-3 sm:py-2"
                 >
                   <div className="min-w-0">
                     {item.subtitle && (
-                      <p className="truncate text-[12px] text-sub-text">
+                      <p className="truncate text-(--text-caption) text-sub-text">
                         {item.subtitle}
                       </p>
                     )}
-                    <p className="truncate text-[13px] font-medium text-foreground">
+                    <p className="truncate text-(--text-label) font-medium text-foreground">
                       {item.title}
                     </p>
                   </div>
@@ -66,23 +66,23 @@ export default function CompareBar({
               ))}
 
               {items.length < maxItems && (
-                <div className="flex h-[44px] items-center rounded-lg border-2 border-dashed border-border px-4 text-[13px] text-sub-text">
+                <div className="flex h-[36px] shrink-0 items-center rounded-lg border-2 border-dashed border-border px-2.5 text-(--text-label) text-sub-text sm:h-(--min-tap)">
                   {emptyLabel}
                 </div>
               )}
             </div>
 
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
               <button
                 onClick={onClear}
-                className="rounded-lg px-3 py-2 text-[13px] text-sub-text transition-colors hover:bg-gray-100"
+                className="rounded-lg px-2 py-1.5 text-(--text-label) text-sub-text transition-colors hover:bg-gray-100 sm:px-3 sm:py-2"
               >
                 초기화
               </button>
               <button
                 onClick={onCompare}
                 disabled={items.length < maxItems}
-                className="inline-flex min-h-[44px] items-center rounded-xl bg-primary-700 px-5 text-[15px] font-medium text-white transition-colors hover:bg-primary-800 disabled:bg-gray-200 disabled:text-gray-400"
+                className="inline-flex min-h-[36px] items-center rounded-xl bg-primary-700 px-3 text-(--text-btn) font-medium text-white transition-colors hover:bg-primary-800 disabled:bg-gray-200 disabled:text-gray-400 sm:min-h-(--min-tap) sm:px-5"
               >
                 {compareLabel}
               </button>
