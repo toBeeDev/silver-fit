@@ -99,17 +99,41 @@ export async function POST(request: NextRequest) {
         ];
 
     const client = new Anthropic({ apiKey });
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 4096,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content }],
-    });
 
-    const textBlock = response.content.find((b) => b.type === "text");
-    const result = textBlock && textBlock.type === "text" ? textBlock.text : "";
+    const MAX_RETRIES = 3;
+    let lastError: unknown;
 
-    return NextResponse.json({ result });
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        const response = await client.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 4096,
+          system: SYSTEM_PROMPT,
+          messages: [{ role: "user", content }],
+        });
+
+        const textBlock = response.content.find((b) => b.type === "text");
+        const result =
+          textBlock && textBlock.type === "text" ? textBlock.text : "";
+
+        return NextResponse.json({ result });
+      } catch (e) {
+        lastError = e;
+        const isOverloaded =
+          e instanceof Anthropic.APIError && e.status === 529;
+        if (!isOverloaded || attempt === MAX_RETRIES - 1) break;
+        // 재시도 전 대기 (2초, 4초)
+        await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+      }
+    }
+
+    const message =
+      lastError instanceof Anthropic.APIError && lastError.status === 529
+        ? "서버가 일시적으로 혼잡합니다. 잠시 후 다시 시도해주세요."
+        : lastError instanceof Error
+          ? lastError.message
+          : "알 수 없는 오류가 발생했습니다.";
+    return NextResponse.json({ error: message }, { status: 503 });
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.";
