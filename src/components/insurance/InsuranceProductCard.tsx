@@ -1,83 +1,85 @@
+import { memo } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { MoveRight } from "lucide-react";
+import { Check } from "lucide-react";
 import type { InsuranceProduct } from "@/types/insurance";
-
-const categoryColors: Record<string, string> = {
-  연금저축보험: "bg-teal-50 text-teal-700",
-};
 
 export interface InsuranceProductCardProps {
   product: InsuranceProduct;
   index: number;
+  selected?: boolean;
+  onToggle?: (id: string) => void;
 }
 
-export default function InsuranceProductCard({
+export default memo(function InsuranceProductCard({
   product,
   index,
+  selected = false,
+  onToggle,
 }: InsuranceProductCardProps) {
-  return (
-    <a
-      href={product.websiteUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group flex items-start gap-4 border-b border-border/60 py-6 transition-colors first:border-t hover:bg-white/40 sm:gap-5 sm:py-7"
-    >
-      {/* 번호 */}
-      <span className="w-[48px] shrink-0 pt-1 text-3xl font-extralight tabular-nums text-primary-200 sm:w-[56px] sm:text-4xl">
-        {String(index + 1).padStart(2, "0")}
-      </span>
+  const logoSrc = `/images/company/${product.finCoNo}.png`;
 
-      {/* 본문 */}
-      <div className="min-w-0 flex-1">
-        {/* 배지 */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span
-            className={cn(
-              "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
-              categoryColors[product.category] ?? "bg-gray-50 text-gray-600",
-            )}
-          >
+  return (
+    <div className="flex items-center gap-3 border-b border-border/60 py-6 transition-colors first:border-t hover:bg-white/40 sm:gap-4 sm:py-7">
+      {/* 최좌측: 비교 선택 (원형, 수직 중앙) */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onToggle?.(product.id);
+        }}
+        className={cn(
+          "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all sm:h-8 sm:w-8",
+          selected
+            ? "border-primary-700 bg-primary-700 text-white"
+            : "border-border bg-white text-gray-300 hover:border-primary-300 hover:text-primary-400",
+        )}
+        aria-label={selected ? "비교 선택 해제" : "비교 선택"}
+      >
+        <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+      </button>
+
+      {/* 본문 영역 */}
+      <Link
+        href={`/insurance/${product.id}`}
+        className="min-w-0 flex-1"
+      >
+        {/* 1행: 상품명 + 수익률 */}
+        <div className="flex items-center gap-2.5">
+          <h3 className="min-w-0 flex-1 truncate text-[17px] font-semibold leading-snug text-foreground sm:text-[18px]">
+            {product.productName}
+          </h3>
+          <span className="shrink-0 text-[20px] font-bold tabular-nums text-foreground sm:text-[22px]">
+            {product.avgPrftRate != null ? `${product.avgPrftRate}%` : "-"}
+          </span>
+        </div>
+
+        {/* 2행: 로고 + 회사명 */}
+        <div className="mt-1 flex items-center gap-1.5">
+          <Image
+            src={logoSrc}
+            alt={product.companyName}
+            width={18}
+            height={18}
+            className="h-[18px] w-[18px] shrink-0 rounded-full"
+          />
+          <p className="text-[14px] leading-snug text-sub-text">
+            {product.companyName}
+          </p>
+        </div>
+
+        {/* 3행: 태그 */}
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          <span className="inline-flex items-center rounded-full border border-border/60 px-2.5 py-0.5 text-[11px] font-medium text-sub-text">
             {product.category}
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-border/60 px-2 py-0.5 text-[11px] font-medium text-sub-text">
-            <span className="h-1 w-1 rounded-full bg-primary-600" />
-            {product.companyName}
-          </span>
-          <span className="inline-flex items-center rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-medium text-primary-700">
-            금감원
+          <span className="inline-flex items-center rounded-full border border-border/60 px-2.5 py-0.5 text-[11px] font-medium text-sub-text">
+            {product.coverage.split(" / ")[1] ?? product.coverage}
           </span>
         </div>
-
-        {/* 상품명 */}
-        <h3 className="mt-2 text-[17px] font-medium leading-tight text-foreground transition-colors group-hover:text-primary-700 sm:text-[19px]">
-          {product.productName}
-        </h3>
-
-        {/* 핵심 정보 */}
-        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-          <span className="text-[15px] font-semibold text-primary-700">
-            {product.monthlyPremium}
-          </span>
-          <span className="text-[14px] text-sub-text">
-            {product.coverageAmount}
-          </span>
-        </div>
-
-        {/* 특징 태그 */}
-        <div className="mt-2.5 flex flex-wrap gap-1.5">
-          {product.features.slice(0, 3).map((f) => (
-            <span
-              key={f}
-              className="inline-flex items-center rounded-md bg-gray-50 px-2 py-0.5 text-[12px] text-sub-text"
-            >
-              {f}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* 화살표 */}
-      <MoveRight className="mt-2 hidden h-4 w-4 shrink-0 translate-x-0 text-sub-text opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100 sm:block" />
-    </a>
+      </Link>
+    </div>
   );
-}
+});
