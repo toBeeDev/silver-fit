@@ -4,6 +4,9 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import { MoveRight, Upload, RotateCcw, FileText } from "lucide-react";
+import HealthCheckResult, {
+  parseHealthCheckResult,
+} from "@/components/analysis/HealthCheckResult";
 
 interface AnalysisRecord {
   id: string;
@@ -192,15 +195,20 @@ export default function HealthCheckAnalyzer() {
       const text = data.result as string;
       setResult(text);
 
-      // localStorage에 저장
+      // localStorage에 저장 — JSON일 경우 summary를 구조에서 추출
+      const parsed = parseHealthCheckResult(text);
+      const summary = parsed
+        ? `${parsed.overall.grade} · ${parsed.summary}`.slice(0, 100)
+        : text
+            .replace(/[#*\n{}":]/g, " ")
+            .trim()
+            .slice(0, 100);
+
       const record: AnalysisRecord = {
         id: crypto.randomUUID(),
         fileName: file.name,
         date: new Date().toISOString(),
-        summary: text
-          .replace(/[#*\n]/g, " ")
-          .trim()
-          .slice(0, 100),
+        summary,
         result: text,
       };
       const updated = [record, ...history].slice(0, MAX_HISTORY);
@@ -285,12 +293,6 @@ export default function HealthCheckAnalyzer() {
 
           {/* Right — 업로드 */}
           <div className="w-full flex-1">
-            {/* 면책 배너 */}
-            <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[14px] leading-relaxed text-amber-800">
-              ⚠️ 이 서비스는 <strong>참고용 설명</strong>을 제공하며, 의학적
-              진단이 아닙니다. 정확한 진단은 의사 선생님께 받으세요.
-            </div>
-
             {/* 업로드 영역 */}
             <div
               onClick={() => !preview && fileRef.current?.click()}
@@ -452,7 +454,13 @@ export default function HealthCheckAnalyzer() {
             </div>
 
             {/* Right — 결과 */}
-            <div className="w-full flex-1">{renderMarkdown(result)}</div>
+            <div className="w-full flex-1">
+              {(() => {
+                const parsed = parseHealthCheckResult(result);
+                if (parsed) return <HealthCheckResult data={parsed} />;
+                return renderMarkdown(result);
+              })()}
+            </div>
           </div>
         </section>
       )}
