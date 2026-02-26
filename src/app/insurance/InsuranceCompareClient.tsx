@@ -9,6 +9,7 @@ import CompareBar from "@/components/common/CompareBar";
 import type { CompareItem } from "@/components/common/CompareBar";
 import Pagination from "@/components/ui/Pagination";
 import { filterInsuranceProducts } from "@/lib/insurance-filter";
+import { useQueryStates } from "@/lib/use-query-state";
 import type { InsuranceProduct, InsuranceCategory } from "@/types/insurance";
 
 const CompareModal = dynamic(
@@ -33,16 +34,19 @@ interface InsuranceCompareClientProps {
   products: InsuranceProduct[];
 }
 
+const QS_DEFAULTS = { cat: "전체", age: "", q: "", sort: "default", page: "1" };
+
 export default function InsuranceCompareClient({
   products,
 }: InsuranceCompareClientProps) {
-  const [selectedCategory, setSelectedCategory] = useState<
-    InsuranceCategory | "전체"
-  >("전체");
-  const [selectedAge, setSelectedAge] = useState<number | undefined>(undefined);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("default");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [qs, setQs] = useQueryStates(QS_DEFAULTS);
+
+  const selectedCategory = qs.cat as InsuranceCategory | "전체";
+  const selectedAge = qs.age ? Number(qs.age) : undefined;
+  const searchQuery = qs.q;
+  const sortOrder = qs.sort as SortOrder;
+  const currentPage = Math.max(1, Number(qs.page) || 1);
+
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const HEADER_HEIGHT = 64; // h-16
@@ -99,19 +103,17 @@ export default function InsuranceCompareClient({
   }
 
   function handleCategoryChange(category: InsuranceCategory | "전체") {
-    setSelectedCategory(category);
-    setCurrentPage(1);
+    setQs({ cat: category, page: "1" });
     scrollToResults();
   }
 
   function handleAgeChange(age: number | undefined) {
-    setSelectedAge(age);
-    setCurrentPage(1);
+    setQs({ age: age != null ? String(age) : "", page: "1" });
     scrollToResults();
   }
 
   function handlePageChange(page: number) {
-    setCurrentPage(page);
+    setQs({ page: String(page) });
     scrollToResults();
   }
 
@@ -190,8 +192,8 @@ export default function InsuranceCompareClient({
 
           {/* Right — 필터 */}
           <div className="w-full flex-1">
-            <div className="mb-6">
-              <p className="mb-3 text-(--text-body) font-medium text-foreground">
+            <div className="mb-4 sm:mb-6">
+              <p className="mb-2 text-(--text-body-sm) font-medium text-foreground sm:mb-3">
                 보험 유형
               </p>
               <InsuranceFilter
@@ -201,14 +203,14 @@ export default function InsuranceCompareClient({
             </div>
 
             <div>
-              <p className="mb-3 text-(--text-body) font-medium text-foreground">
+              <p className="mb-2 text-(--text-body-sm) font-medium text-foreground sm:mb-3">
                 나이 (만)
               </p>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => handleAgeChange(undefined)}
                   className={cn(
-                    "inline-flex min-h-(--min-tap) items-center rounded-full px-4 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
+                    "inline-flex min-h-(--min-tap) items-center rounded-full px-3 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
                     selectedAge === undefined
                       ? "bg-primary-700 text-white"
                       : "border border-border text-sub-text hover:border-foreground/30 hover:text-foreground",
@@ -221,7 +223,7 @@ export default function InsuranceCompareClient({
                     key={age}
                     onClick={() => handleAgeChange(age)}
                     className={cn(
-                      "inline-flex min-h-(--min-tap) items-center rounded-full px-4 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
+                      "inline-flex min-h-(--min-tap) items-center rounded-full px-3 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
                       selectedAge === age
                         ? "bg-primary-700 text-white"
                         : "border border-border text-sub-text hover:border-foreground/30 hover:text-foreground",
@@ -234,14 +236,14 @@ export default function InsuranceCompareClient({
             </div>
 
             {/* 검색바 */}
-            <div className="mt-6">
-              <p className="mb-3 text-(--text-body) font-medium text-foreground">
+            <div className="mt-4 sm:mt-6">
+              <p className="mb-2 text-(--text-body-sm) font-medium text-foreground sm:mb-3">
                 상품 검색
               </p>
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  setCurrentPage(1);
+                  setQs({ page: "1" });
                   scrollToResults();
                 }}
                 className="flex gap-2"
@@ -252,8 +254,7 @@ export default function InsuranceCompareClient({
                     type="text"
                     value={searchQuery}
                     onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setCurrentPage(1);
+                      setQs({ q: e.target.value, page: "1" });
                     }}
                     placeholder="상품명 또는 회사명 검색"
                     className="h-(--min-tap) w-full rounded-xl border border-border bg-white pl-10 pr-4 text-(--text-body) text-foreground placeholder:text-sub-text/50 focus:border-primary-400 focus:outline-none"
@@ -269,7 +270,7 @@ export default function InsuranceCompareClient({
             </div>
 
             {/* 면책 안내 */}
-            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-(--text-body) leading-relaxed text-amber-800">
+            <div className="mt-4 rounded-xl sm:mt-6 border border-amber-200 bg-amber-50 px-4 py-3 text-(--text-body) leading-relaxed text-amber-800">
               ⚠️ 보험료는 가입 조건에 따라 달라질 수 있습니다. 정확한 보험료는
               각 보험사에 문의하세요.
             </div>
@@ -298,8 +299,7 @@ export default function InsuranceCompareClient({
               <button
                 key={opt.value}
                 onClick={() => {
-                  setSortOrder(opt.value);
-                  setCurrentPage(1);
+                  setQs({ sort: opt.value, page: "1" });
                 }}
                 className={cn(
                   "rounded-full px-2.5 py-1 text-(--text-label) font-medium transition-all sm:px-3 sm:py-1.5",

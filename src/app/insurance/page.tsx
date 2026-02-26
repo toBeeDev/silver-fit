@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getAllInsuranceProducts } from "@/lib/insurance";
 import InsuranceCompareClient from "./InsuranceCompareClient";
 
@@ -10,5 +11,9 @@ export const metadata: Metadata = {
 
 export default function InsurancePage() {
   const products = getAllInsuranceProducts();
-  return <InsuranceCompareClient products={products} />;
+  return (
+    <Suspense>
+      <InsuranceCompareClient products={products} />
+    </Suspense>
+  );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getBenefits } from "@/lib/welfare-api";
 import BenefitListClient from "./BenefitListClient";
 
@@ -26,7 +27,9 @@ export default function BenefitsPage() {
         </p>
       </div>
 
-      <BenefitListClient benefits={benefits} />
+      <Suspense>
+        <BenefitListClient benefits={benefits} />
+      </Suspense>
     </div>
   );
 }

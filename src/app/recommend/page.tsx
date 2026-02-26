@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import BenefitRecommender from "@/components/benefits/BenefitRecommender";
 import { getBenefits } from "@/lib/welfare-api";
 
@@ -12,6 +13,8 @@ export default function RecommendPage() {
   const { benefits } = getBenefits(1, 1000);
 
   return (
-    <BenefitRecommender benefits={benefits} />
+    <Suspense>
+      <BenefitRecommender benefits={benefits} />
+    </Suspense>
   );
 }

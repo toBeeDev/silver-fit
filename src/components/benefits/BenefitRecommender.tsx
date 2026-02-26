@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef, useMemo } from "react";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
 import BenefitList from "@/components/benefits/BenefitList";
 import { filterBenefits } from "@/lib/benefits";
+import { useQueryStates } from "@/lib/use-query-state";
 import type { Benefit, IncomeLevel } from "@/types/benefit";
 import { MoveRight } from "lucide-react";
 
@@ -23,6 +24,8 @@ const INCOME_OPTIONS = [
   { value: "무관", label: "해당 없음 / 모르겠음" },
 ];
 
+const DEFAULTS = { age: "", region: "전국", income: "무관", searched: "" };
+
 export interface BenefitRecommenderProps {
   benefits: Benefit[];
 }
@@ -30,23 +33,28 @@ export interface BenefitRecommenderProps {
 export default function BenefitRecommender({
   benefits,
 }: BenefitRecommenderProps) {
-  const [age, setAge] = useState("");
-  const [region, setRegion] = useState("전국");
-  const [income, setIncome] = useState<IncomeLevel>("무관");
-  const [results, setResults] = useState<Benefit[] | null>(null);
+  const [qs, setQs] = useQueryStates(DEFAULTS);
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  const hasSearched = qs.searched === "1";
+
+  const results = useMemo(() => {
+    if (!hasSearched) return null;
+    const ageNum = parseInt(qs.age, 10);
+    if (isNaN(ageNum) || ageNum < 0) return null;
+    return filterBenefits(benefits, {
+      age: ageNum,
+      region: qs.region,
+      incomeLevel: qs.income as IncomeLevel,
+    });
+  }, [benefits, qs.age, qs.region, qs.income, hasSearched]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const ageNum = parseInt(age, 10);
+    const ageNum = parseInt(qs.age, 10);
     if (isNaN(ageNum) || ageNum < 0) return;
 
-    const filtered = filterBenefits(benefits, {
-      age: ageNum,
-      region,
-      incomeLevel: income,
-    });
-    setResults(filtered);
+    setQs({ ...qs, searched: "1" });
 
     setTimeout(() => {
       resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -109,23 +117,23 @@ export default function BenefitRecommender({
                   min={0}
                   max={120}
                   placeholder="예: 68"
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
+                  value={qs.age}
+                  onChange={(e) => setQs({ age: e.target.value })}
                   required
                 />
                 <Select
                   id="region"
                   label="거주 지역"
                   options={REGION_OPTIONS}
-                  value={region}
-                  onChange={(e) => setRegion(e.target.value)}
+                  value={qs.region}
+                  onChange={(e) => setQs({ region: e.target.value })}
                 />
                 <Select
                   id="income"
                   label="소득 수준"
                   options={INCOME_OPTIONS}
-                  value={income}
-                  onChange={(e) => setIncome(e.target.value as IncomeLevel)}
+                  value={qs.income}
+                  onChange={(e) => setQs({ income: e.target.value })}
                 />
               </div>
 
