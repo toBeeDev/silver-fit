@@ -1,6 +1,6 @@
 import type { InsuranceProduct, InsuranceFilter } from "@/types/insurance";
 
-/** 보험 상품 필터링 (클라이언트/서버 공용) */
+/** 보험 상품 필터링 (클라이언트 공용) */
 export function filterInsuranceProducts(
   products: InsuranceProduct[],
   filter: InsuranceFilter,

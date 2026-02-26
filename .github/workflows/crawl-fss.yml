@@ -1,15 +1,12 @@
-name: Crawl FSS Annuity Products
+name: Crawl FSS → Supabase
 
 on:
   schedule:
-    - cron: '0 18 * * *' # 매일 UTC 18:00 (KST 03:00)
+    - cron: '0 18 * * 0' # 매주 일요일 UTC 18:00 (KST 월 03:00)
   workflow_dispatch: # 수동 실행
 
-permissions:
-  contents: write
-
 jobs:
-  crawl:
+  sync:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -23,16 +20,13 @@ jobs:
 
       - run: npm ci
 
-      - name: Run FSS crawler
+      - name: Sync FSS → Supabase
         env:
           FSS_API_KEY: ${{ secrets.FSS_API_KEY }}
-        run: npm run crawl:fss
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        run: npx tsx scripts/crawl-fss.ts
 
-      - name: Commit & push changes
-        run: |
-          git diff --quiet src/data/fss-annuity-products.json && exit 0
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/data/fss-annuity-products.json
-          git commit -m "chore: 금감원 연금저축보험 데이터 자동 업데이트 $(date +%Y-%m-%d)"
-          git push
+      - name: Trigger Vercel rebuild
+        if: success()
+        run: curl -s -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}" || true

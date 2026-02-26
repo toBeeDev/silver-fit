@@ -56,7 +56,8 @@ function transformFssProduct(
   return {
     id: String(seq),
     finCoNo: base.fin_co_no,
-    category: "연금저축보험",
+    source: "fss_api" as const,
+    category: "연금저축보험" as const,
     companyName: base.kor_co_nm,
     productName: base.fin_prdt_nm,
     monthlyPremium: option?.mon_paym_atm
@@ -73,16 +74,20 @@ function transformFssProduct(
     minAge: 18,
     maxAge: 80,
     websiteUrl: "https://finlife.fss.or.kr",
-    dataSource: "fss",
     updatedAt: base.dcls_month
       ? `${base.dcls_month.slice(0, 4)}-${base.dcls_month.slice(4, 6)}-01`
       : new Date().toISOString().slice(0, 10),
+    premium65m: null,
+    premium65f: null,
+    contractType: null,
     avgPrftRate: base.avg_prft_rate ?? 0,
     dclsRate: base.dcls_rate ?? 0,
     btrmPrftRate1: base.btrm_prft_rate_1 ?? null,
     btrmPrftRate2: base.btrm_prft_rate_2 ?? null,
     btrmPrftRate3: base.btrm_prft_rate_3 ?? null,
     guarRate: base.guar_rate ?? "",
+    coverageDetail: null,
+    conditions: null,
   };
 }
 

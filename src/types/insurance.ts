@@ -1,13 +1,29 @@
-/** 보험 상품 카테고리 */
-export type InsuranceCategory = "연금저축보험";
+/** 보험 상품 카테고리 (4종) */
+export type InsuranceCategory = "간병보험" | "치매보험" | "실손보험" | "연금저축보험";
+
+/** DB insurance_type ↔ 한글 카테고리 매핑 */
+export const INSURANCE_TYPE_MAP: Record<string, InsuranceCategory> = {
+  care: "간병보험",
+  dementia: "치매보험",
+  medical: "실손보험",
+  pension: "연금저축보험",
+};
+
+export const INSURANCE_CATEGORY_TO_TYPE: Record<InsuranceCategory, string> = {
+  간병보험: "care",
+  치매보험: "dementia",
+  실손보험: "medical",
+  연금저축보험: "pension",
+};
 
 /** 보험 상품 타입 (목록 + 비교용) */
 export interface InsuranceProduct {
   id: string;
-  finCoNo: string;
+  source: "fss_api" | "manual";
   category: InsuranceCategory;
   companyName: string;
   productName: string;
+  /** 연금: "월 X만원" / 간병·치매·실손: "월 X원" */
   monthlyPremium: string;
   coverage: string;
   coverageAmount: string;
@@ -16,15 +32,26 @@ export interface InsuranceProduct {
   minAge: number;
   maxAge: number;
   websiteUrl: string;
-  dataSource: "fss";
   updatedAt: string;
-  /** 비교용 숫자 필드 */
-  avgPrftRate: number;
-  dclsRate: number;
+  /** 간병·치매·실손: 65세 남성 보험료 */
+  premium65m: number | null;
+  /** 간병·치매·실손: 65세 여성 보험료 */
+  premium65f: number | null;
+  /** 갱신/비갱신 */
+  contractType: "renewal" | "non_renewal" | null;
+  /** 연금 전용: 비교용 숫자 필드 */
+  avgPrftRate: number | null;
+  dclsRate: number | null;
   btrmPrftRate1: number | null;
   btrmPrftRate2: number | null;
   btrmPrftRate3: number | null;
-  guarRate: string;
+  guarRate: string | null;
+  /** 보장 내용 (구조화) */
+  coverageDetail: Record<string, unknown> | null;
+  /** 가입 조건 */
+  conditions: string | null;
+  /** 레거시 호환 */
+  finCoNo?: string;
 }
 
 /** 연금 옵션 (시뮬레이터용) */
@@ -46,9 +73,9 @@ export interface InsuranceOption {
 export interface InsuranceProductDetail extends InsuranceProduct {
   saleStartDay: string | null;
   mntnCnt: number;
-  joinWay: string;
-  pnsnKindNm: string;
-  prdtTypeNm: string;
+  joinWay: string | null;
+  pnsnKindNm: string | null;
+  prdtTypeNm: string | null;
   etc: string | null;
   options: InsuranceOption[];
 }
@@ -57,7 +84,11 @@ export interface InsuranceProductDetail extends InsuranceProduct {
 export interface InsuranceFilter {
   category?: InsuranceCategory | "전체";
   age?: number;
+  gender?: "m" | "f";
+  sort?: "premium_asc" | "premium_desc" | "rate_desc" | "rate_asc";
 }
+
+// ─── 금감원 API 타입 (크롤링 전용) ─────────────────────────
 
 /** 금감원 API — 연금저축보험 기본 정보 */
 export interface FssAnnuityBase {
