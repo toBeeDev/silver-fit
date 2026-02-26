@@ -3,6 +3,7 @@ import {
   INSURANCE_TYPE_MAP,
   INSURANCE_CATEGORY_TO_TYPE,
 } from "@/types/insurance";
+import { getCompanyCode } from "@/lib/company-urls";
 import type {
   InsuranceProduct,
   InsuranceProductDetail,
@@ -83,7 +84,7 @@ function rowToProduct(row: InsuranceProductRow): InsuranceProduct {
     guarRate: row.guar_rate ?? null,
     coverageDetail: row.coverage ?? null,
     conditions: row.conditions ?? null,
-    finCoNo: row.product_code?.split("-")[0] ?? undefined,
+    finCoNo: row.product_code?.split("-")[0] ?? getCompanyCode(row.company) ?? undefined,
   };
 }
 

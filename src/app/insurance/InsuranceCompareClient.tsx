@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowUpDown, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import InsuranceFilter from "@/components/insurance/InsuranceFilter";
 import InsuranceProductCard from "@/components/insurance/InsuranceProductCard";
 import CompareBar from "@/components/common/CompareBar";
 import type { CompareItem } from "@/components/common/CompareBar";
+import CompareModal from "@/components/insurance/CompareModal";
 import Pagination from "@/components/ui/Pagination";
 import { filterInsuranceProducts } from "@/lib/insurance-filter";
 import { useQueryStates } from "@/lib/use-query-state";
@@ -14,11 +14,15 @@ import type { InsuranceProduct, InsuranceCategory } from "@/types/insurance";
 
 import { cn } from "@/lib/utils";
 
-const AGE_PRESETS = [60, 65, 70, 75] as const;
 const PAGE_SIZE = 10;
 const MAX_COMPARE = 3;
 
-type SortOrder = "default" | "rate-desc" | "rate-asc" | "premium-asc" | "premium-desc";
+type SortOrder =
+  | "default"
+  | "rate-desc"
+  | "rate-asc"
+  | "premium-asc"
+  | "premium-desc";
 
 const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
   { value: "default", label: "기본순" },
@@ -38,7 +42,13 @@ const GENDER_OPTIONS = [
   { value: "f", label: "여성" },
 ] as const;
 
-const QS_DEFAULTS = { cat: "전체", age: "", gender: "", q: "", sort: "default", page: "1" };
+const QS_DEFAULTS = {
+  cat: "전체",
+  gender: "",
+  q: "",
+  sort: "default",
+  page: "1",
+};
 
 export default function InsuranceCompareClient({
   products,
@@ -46,30 +56,26 @@ export default function InsuranceCompareClient({
   const [qs, setQs] = useQueryStates(QS_DEFAULTS);
 
   const selectedCategory = qs.cat as InsuranceCategory | "전체";
-  const selectedAge = qs.age ? Number(qs.age) : undefined;
   const selectedGender = qs.gender as "" | "m" | "f";
   const searchQuery = qs.q;
   const sortOrder = qs.sort as SortOrder;
   const currentPage = Math.max(1, Number(qs.page) || 1);
 
-  const router = useRouter();
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  const HEADER_HEIGHT = 64; // h-16
+  const HEADER_HEIGHT = 64;
 
   // 비교 상태
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
 
-  const toggleCompare = useCallback(
-    (id: string) => {
-      setCompareIds((prev) => {
-        if (prev.includes(id)) return prev.filter((x) => x !== id);
-        if (prev.length >= MAX_COMPARE) return prev;
-        return [...prev, id];
-      });
-    },
-    [],
-  );
+  const toggleCompare = useCallback((id: string) => {
+    setCompareIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= MAX_COMPARE) return prev;
+      return [...prev, id];
+    });
+  }, []);
 
   const removeCompare = useCallback((id: string) => {
     setCompareIds((prev) => prev.filter((x) => x !== id));
@@ -79,11 +85,9 @@ export default function InsuranceCompareClient({
     setCompareIds([]);
   }, []);
 
-  const goToCompare = useCallback(() => {
-    if (compareIds.length >= 2) {
-      router.push(`/insurance/compare?ids=${compareIds.join(",")}`);
-    }
-  }, [compareIds, router]);
+  const openCompare = useCallback(() => {
+    if (compareIds.length >= 2) setShowCompare(true);
+  }, [compareIds]);
 
   const compareProducts = useMemo(
     () =>
@@ -107,18 +111,14 @@ export default function InsuranceCompareClient({
     setTimeout(() => {
       const el = resultsRef.current;
       if (!el) return;
-      const top = el.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
+      const top =
+        el.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
       window.scrollTo({ top, behavior: "smooth" });
     }, 100);
   }
 
   function handleCategoryChange(category: InsuranceCategory | "전체") {
     setQs({ cat: category, page: "1" });
-    scrollToResults();
-  }
-
-  function handleAgeChange(age: number | undefined) {
-    setQs({ age: age != null ? String(age) : "", page: "1" });
     scrollToResults();
   }
 
@@ -130,7 +130,6 @@ export default function InsuranceCompareClient({
   const filtered = useMemo(() => {
     const base = filterInsuranceProducts(products, {
       category: selectedCategory,
-      age: selectedAge,
     });
     let result = base;
     if (searchQuery.trim()) {
@@ -141,213 +140,104 @@ export default function InsuranceCompareClient({
           p.companyName.toLowerCase().includes(q),
       );
     }
+    const getPremium = (p: InsuranceProduct) =>
+      selectedGender === "f" ? p.premium65f : p.premium65m;
+
     if (sortOrder === "rate-desc") {
-      result = [...result].sort((a, b) => (b.avgPrftRate ?? 0) - (a.avgPrftRate ?? 0));
+      result = [...result].sort(
+        (a, b) => (b.avgPrftRate ?? 0) - (a.avgPrftRate ?? 0),
+      );
     } else if (sortOrder === "rate-asc") {
-      result = [...result].sort((a, b) => (a.avgPrftRate ?? 0) - (b.avgPrftRate ?? 0));
+      result = [...result].sort(
+        (a, b) => (a.avgPrftRate ?? 0) - (b.avgPrftRate ?? 0),
+      );
     } else if (sortOrder === "premium-asc") {
-      const getPremium = (p: InsuranceProduct) => selectedGender === "f" ? p.premium65f : p.premium65m;
-      result = [...result].sort((a, b) => (getPremium(a) ?? Infinity) - (getPremium(b) ?? Infinity));
+      result = [...result].sort(
+        (a, b) => (getPremium(a) ?? Infinity) - (getPremium(b) ?? Infinity),
+      );
     } else if (sortOrder === "premium-desc") {
-      const getPremium = (p: InsuranceProduct) => selectedGender === "f" ? p.premium65f : p.premium65m;
-      result = [...result].sort((a, b) => (getPremium(b) ?? 0) - (getPremium(a) ?? 0));
+      result = [...result].sort(
+        (a, b) => (getPremium(b) ?? 0) - (getPremium(a) ?? 0),
+      );
+    } else if (selectedGender) {
+      // 기본순 + 성별 선택 시 해당 성별 보험료 낮은순 정렬
+      result = [...result].sort(
+        (a, b) => (getPremium(a) ?? Infinity) - (getPremium(b) ?? Infinity),
+      );
     }
     return result;
-  }, [products, selectedCategory, selectedAge, selectedGender, searchQuery, sortOrder]);
+  }, [
+    products,
+    selectedCategory,
+    selectedGender,
+    searchQuery,
+    sortOrder,
+  ]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paged = useMemo(
-    () => filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    () =>
+      filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
     [filtered, currentPage],
   );
 
   return (
-    <div className="-mt-16">
-      {/* Hero: 필터 */}
-      <section className="full-section relative overflow-hidden pt-16">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/benefits-bg.jpg')" }}
-        />
-        <div className="absolute inset-0 bg-background/97" />
-        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-6 px-(--space-page-x) py-(--space-page-y) sm:flex-row sm:items-center sm:gap-16 sm:py-0">
-          {/* Left */}
-          <div className="shrink-0 sm:w-[280px]">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-(--text-caption) font-medium text-sub-text">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
-              Insurance Compare
-            </span>
-            <h1 className="mt-4 text-(--text-hero) font-normal tracking-tight text-foreground sm:mt-6">
-              보험상품
-              <br />
-              찾기
-            </h1>
-            <p className="mt-4 text-(--text-body) leading-relaxed text-sub-text">
-              어르신을 위한 보험상품을
-              <br className="hidden sm:block" />
-              한눈에 비교해보세요
-            </p>
-
-            {/* Trust indicators */}
-            <div className="mt-8 hidden flex-col gap-3 sm:flex">
-              {[
-                "금감원 공시 데이터 기반",
-                "4종 보험 유형 비교",
-                "보험사 바로가기 제공",
-              ].map((text) => (
-                <span
-                  key={text}
-                  className="inline-flex items-center gap-2 text-(--text-body) text-sub-text"
-                >
-                  <span className="h-1 w-1 rounded-full bg-primary-600" />
-                  {text}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Right — 필터 */}
-          <div className="w-full flex-1">
-            <div className="mb-4 sm:mb-6">
-              <p className="mb-2 text-(--text-body-sm) font-medium text-foreground sm:mb-3">
-                보험 유형
-              </p>
-              <InsuranceFilter
-                selected={selectedCategory}
-                onSelect={handleCategoryChange}
-              />
-            </div>
-
-            <div>
-              <p className="mb-2 text-(--text-body-sm) font-medium text-foreground sm:mb-3">
-                나이 (만)
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => handleAgeChange(undefined)}
-                  className={cn(
-                    "inline-flex min-h-(--min-tap) items-center rounded-full px-3 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
-                    selectedAge === undefined
-                      ? "bg-primary-700 text-white"
-                      : "border border-border text-sub-text hover:border-foreground/30 hover:text-foreground",
-                  )}
-                >
-                  전체
-                </button>
-                {AGE_PRESETS.map((age) => (
-                  <button
-                    key={age}
-                    onClick={() => handleAgeChange(age)}
-                    className={cn(
-                      "inline-flex min-h-(--min-tap) items-center rounded-full px-3 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
-                      selectedAge === age
-                        ? "bg-primary-700 text-white"
-                        : "border border-border text-sub-text hover:border-foreground/30 hover:text-foreground",
-                    )}
-                  >
-                    {age}세
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 성별 */}
-            <div className="mt-4 sm:mt-6">
-              <p className="mb-2 text-(--text-body-sm) font-medium text-foreground sm:mb-3">
-                성별
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {GENDER_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => {
-                      setQs({ gender: opt.value, page: "1" });
-                      scrollToResults();
-                    }}
-                    className={cn(
-                      "inline-flex min-h-(--min-tap) items-center rounded-full px-3 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
-                      selectedGender === opt.value
-                        ? "bg-primary-700 text-white"
-                        : "border border-border text-sub-text hover:border-foreground/30 hover:text-foreground",
-                    )}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 검색바 */}
-            <div className="mt-4 sm:mt-6">
-              <p className="mb-2 text-(--text-body-sm) font-medium text-foreground sm:mb-3">
-                상품 검색
-              </p>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setQs({ page: "1" });
-                  scrollToResults();
-                }}
-                className="flex gap-2"
-              >
-                <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-sub-text" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setQs({ q: e.target.value, page: "1" });
-                    }}
-                    placeholder="상품명 또는 회사명 검색"
-                    className="h-(--min-tap) w-full rounded-xl border border-border bg-white pl-10 pr-4 text-(--text-body) text-foreground placeholder:text-sub-text/50 focus:border-primary-400 focus:outline-none"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="inline-flex h-(--min-tap) shrink-0 items-center rounded-xl bg-primary-700 px-4 text-(--text-btn) font-medium text-white transition-colors hover:bg-primary-800 sm:px-5"
-                >
-                  검색
-                </button>
-              </form>
-            </div>
-
-            {/* 면책 안내 */}
-            <div className="mt-4 rounded-xl sm:mt-6 border border-amber-200 bg-amber-50 px-4 py-3 text-(--text-body) leading-relaxed text-amber-800">
-              ⚠️ 보험료는 가입 조건에 따라 달라질 수 있습니다. 정확한 보험료는
-              각 보험사에 문의하세요.
-            </div>
-          </div>
+    <div className="mx-auto max-w-4xl px-(--space-page-x) pb-10 pt-6 sm:pt-10">
+      {/* 헤더: 타이틀 + 검색 */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-section-title font-bold text-foreground sm:text-page-title">
+            보험상품 비교
+          </h1>
+          <p className="mt-1 text-body-sm text-sub-text">
+            금감원 공시 데이터 기반 · {products.length}개 상품
+          </p>
         </div>
-      </section>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setQs({ page: "1" });
+            scrollToResults();
+          }}
+          className="relative w-full sm:w-[280px]"
+        >
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sub-text" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setQs({ q: e.target.value, page: "1" })}
+            placeholder="상품명·회사명 검색"
+            className="h-9 w-full rounded-lg border border-border bg-white pl-9 pr-3 text-body-sm text-foreground placeholder:text-sub-text/50 focus:border-primary-400 focus:outline-none sm:h-10"
+          />
+        </form>
+      </div>
 
-      {/* 결과 리스트 */}
-      <div ref={resultsRef} className="mx-auto max-w-3xl px-(--space-page-x) py-(--space-page-y)">
-        {/* 툴바: 건수 + 정렬 */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-(--text-body) font-semibold text-foreground">
-              총 {filtered.length}건
-            </span>
-            {totalPages > 1 && (
-              <span className="text-(--text-body-sm) text-sub-text">
-                {currentPage} / {totalPages} 페이지
-              </span>
-            )}
-          </div>
+      {/* 필터 */}
+      <div className="mt-5 flex flex-col gap-3 sm:mt-6">
+        {/* 보험 유형 */}
+        <InsuranceFilter
+          selected={selectedCategory}
+          onSelect={handleCategoryChange}
+        />
 
-          <div className="flex items-center gap-1">
-            <ArrowUpDown className="hidden h-3.5 w-3.5 text-sub-text sm:block" />
-            {SORT_OPTIONS.map((opt) => (
+        {/* 성별 */}
+        <div className="flex items-center gap-2">
+          <span className="w-8 shrink-0 text-caption font-medium text-sub-text sm:text-body-sm">
+            성별
+          </span>
+          <div className="flex gap-1">
+            {GENDER_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
                 onClick={() => {
-                  setQs({ sort: opt.value, page: "1" });
+                  setQs({ gender: opt.value, page: "1" });
+                  scrollToResults();
                 }}
                 className={cn(
-                  "rounded-full px-2.5 py-1 text-(--text-label) font-medium transition-all sm:px-3 sm:py-1.5",
-                  sortOrder === opt.value
+                  "rounded-full px-2.5 py-0.5 text-caption font-medium transition-all sm:px-3 sm:py-1 sm:text-label",
+                  selectedGender === opt.value
                     ? "bg-primary-700 text-white"
-                    : "text-sub-text hover:text-foreground",
+                    : "bg-gray-100 text-sub-text hover:bg-gray-200",
                 )}
               >
                 {opt.label}
@@ -355,52 +245,83 @@ export default function InsuranceCompareClient({
             ))}
           </div>
         </div>
-
-        {/* 안내 */}
-        <div className="mt-3 flex flex-col gap-1.5 text-(--text-caption) text-sub-text">
-          <p className="inline-flex items-center gap-1.5 text-(--text-body-sm) font-medium text-primary-700">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-100 text-[10px]">VS</span>
-            체크 버튼으로 2~3개 상품을 선택하면 비교가 가능합니다
-          </p>
-          <p>금감원 금융상품한눈에 공시 데이터 기준 (2020.10)</p>
-        </div>
-
-        {/* 리스트 */}
-        <div className="mt-4">
-          {filtered.length === 0 ? (
-            <div className="rounded-xl border border-border bg-white px-6 py-16 text-center">
-              <p className="text-(--text-section-title) font-medium text-foreground">
-                조건에 맞는 상품이 없습니다
-              </p>
-              <p className="mt-2 text-(--text-body) text-sub-text">
-                필터 조건을 변경해보세요
-              </p>
-            </div>
-          ) : (
-            <>
-              <div>
-                {paged.map((product, i) => (
-                  <InsuranceProductCard
-                    key={product.id}
-                    product={product}
-                    index={(currentPage - 1) * PAGE_SIZE + i}
-                    selected={compareIds.includes(product.id)}
-                    onToggle={toggleCompare}
-                    gender={selectedGender || undefined}
-                  />
-                ))}
-              </div>
-
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            </>
-          )}
-        </div>
-
       </div>
+
+      {/* 툴바: 건수 + 정렬 + VS 안내 */}
+      <div ref={resultsRef} className="mt-5 flex flex-wrap items-center justify-between gap-2 sm:mt-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="text-body font-semibold text-foreground">
+            {filtered.length}건
+          </span>
+          {totalPages > 1 && (
+            <span className="text-caption text-sub-text sm:text-body-sm">
+              {currentPage}/{totalPages}
+            </span>
+          )}
+          <span className="hidden items-center gap-1 rounded-full bg-primary-50 px-2 py-0.5 text-caption font-medium text-primary-700 sm:inline-flex">
+            <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary-100 text-[8px]">VS</span>
+            2~3개 선택 후 비교
+          </span>
+        </div>
+
+        <div className="flex items-center gap-0.5 sm:gap-1">
+          {SORT_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setQs({ sort: opt.value, page: "1" })}
+              className={cn(
+                "rounded-full px-2 py-0.5 text-caption font-medium transition-all sm:px-2.5 sm:py-1 sm:text-label",
+                sortOrder === opt.value
+                  ? "bg-primary-700 text-white"
+                  : "text-sub-text hover:text-foreground",
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 리스트 */}
+      <div className="mt-2 sm:mt-3">
+        {filtered.length === 0 ? (
+          <div className="rounded-xl border border-border bg-white px-6 py-16 text-center">
+            <p className="text-section-title font-medium text-foreground">
+              조건에 맞는 상품이 없습니다
+            </p>
+            <p className="mt-2 text-body text-sub-text">
+              필터 조건을 변경해보세요
+            </p>
+          </div>
+        ) : (
+          <>
+            <div>
+              {paged.map((product, i) => (
+                <InsuranceProductCard
+                  key={product.id}
+                  product={product}
+                  index={(currentPage - 1) * PAGE_SIZE + i}
+                  selected={compareIds.includes(product.id)}
+                  onToggle={toggleCompare}
+                  gender={selectedGender || undefined}
+                />
+              ))}
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
+      </div>
+
+      {/* 면책 */}
+      <p className="mt-4 text-center text-caption text-sub-text">
+        금감원 금융상품한눈에 공시 데이터 기준. 보험료는 가입 조건에 따라
+        달라질 수 있습니다.
+      </p>
 
       {/* 비교 바 */}
       <CompareBar
@@ -408,8 +329,15 @@ export default function InsuranceCompareClient({
         maxItems={MAX_COMPARE}
         minItems={2}
         onRemove={removeCompare}
-        onCompare={goToCompare}
+        onCompare={openCompare}
         onClear={clearCompare}
+      />
+
+      {/* 비교 모달 */}
+      <CompareModal
+        open={showCompare}
+        onClose={() => setShowCompare(false)}
+        products={compareProducts}
       />
     </div>
   );

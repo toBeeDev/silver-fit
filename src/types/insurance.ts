@@ -83,7 +83,6 @@ export interface InsuranceProductDetail extends InsuranceProduct {
 /** 보험 상품 필터 */
 export interface InsuranceFilter {
   category?: InsuranceCategory | "전체";
-  age?: number;
   gender?: "m" | "f";
   sort?: "premium_asc" | "premium_desc" | "rate_desc" | "rate_asc";
 }

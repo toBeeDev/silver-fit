@@ -12,11 +12,6 @@ export function filterInsuranceProducts(
       p.category !== filter.category
     )
       return false;
-    if (
-      filter.age !== undefined &&
-      (p.minAge > filter.age || p.maxAge < filter.age)
-    )
-      return false;
     return true;
   });
 }

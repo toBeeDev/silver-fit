@@ -50,8 +50,33 @@ const COMPANY_URLS: Record<string, string> = {
   "0011959": "https://www.truston.com",               // 트러스톤자산운용
 };
 
+/** 회사명 → 금융사 코드 (수동 입력 상품용 로고 매핑) */
+const COMPANY_NAME_TO_CODE: Record<string, string> = {
+  한화생명: "0010593",
+  삼성생명: "0010595",
+  흥국생명: "0010596",
+  교보생명: "0010597",
+  신한라이프: "0010599",
+  동양생명: "0010622",
+  농협생명: "0013173",
+  메리츠화재: "0010626",
+  한화손해보험: "0010627",
+  롯데손해보험: "0010628",
+  흥국화재: "0010630",
+  삼성화재: "0010633",
+  현대해상: "0010634",
+  "KB손해보험": "0010635",
+  "DB손해보험": "0010636",
+  농협손해보험: "0013173",
+};
+
 const FALLBACK_URL = "https://finlife.fss.or.kr";
 
 export function getCompanyUrl(finCoNo: string): string {
   return COMPANY_URLS[finCoNo] ?? FALLBACK_URL;
+}
+
+/** 회사명으로 금융사 코드를 찾는다 (로고 파일 매핑용) */
+export function getCompanyCode(companyName: string): string | null {
+  return COMPANY_NAME_TO_CODE[companyName] ?? null;
 }
