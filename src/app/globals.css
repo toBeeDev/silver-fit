@@ -40,7 +40,7 @@
   --space-page-y: 32px;
   --space-section-gap: 24px;
   --space-card-pad: 14px;
-  --min-tap: 44px;
+  --min-tap: 36px;
 }
 
 @media (min-width: 640px) {
