@@ -61,11 +61,11 @@ export default function CompareModal({
     { label: "2년 수익률", valueA: productA.btrmPrftRate2, valueB: productB.btrmPrftRate2, unit: "%", higherIsBetter: true },
     { label: "3년 수익률", valueA: productA.btrmPrftRate3, valueB: productB.btrmPrftRate3, unit: "%", higherIsBetter: true },
     { label: "공시이율", valueA: productA.dclsRate, valueB: productB.dclsRate, unit: "%", higherIsBetter: true },
-    { label: "최저보증이율", valueA: parseGuarRate(productA.guarRate), valueB: parseGuarRate(productB.guarRate), unit: "%", higherIsBetter: true },
+    { label: "최저보증이율", valueA: parseGuarRate(productA.guarRate ?? ""), valueB: parseGuarRate(productB.guarRate ?? ""), unit: "%", higherIsBetter: true },
   ];
 
-  const logoA = `/images/company/${productA.finCoNo}.png`;
-  const logoB = `/images/company/${productB.finCoNo}.png`;
+  const logoA = productA.finCoNo ? `/images/company/${productA.finCoNo}.png` : null;
+  const logoB = productB.finCoNo ? `/images/company/${productB.finCoNo}.png` : null;
   const typeA = productA.coverage.split(" / ")[1] ?? productA.coverage;
   const typeB = productB.coverage.split(" / ")[1] ?? productB.coverage;
 
@@ -108,13 +108,19 @@ export default function CompareModal({
             <div className="flex items-center px-3 py-4 sm:px-6 sm:py-6">
               {/* A */}
               <div className="flex min-w-0 flex-1 flex-col items-center text-center">
-                <Image
-                  src={logoA}
-                  alt={productA.companyName}
-                  width={80}
-                  height={80}
-                  className="h-[48px] w-[48px] rounded-full sm:h-[80px] sm:w-[80px]"
-                />
+                {logoA ? (
+                  <Image
+                    src={logoA}
+                    alt={productA.companyName}
+                    width={80}
+                    height={80}
+                    className="h-[48px] w-[48px] rounded-full sm:h-[80px] sm:w-[80px]"
+                  />
+                ) : (
+                  <div className="flex h-[48px] w-[48px] items-center justify-center rounded-full bg-gray-100 text-(--text-body-sm) font-bold text-sub-text sm:h-[80px] sm:w-[80px]">
+                    {productA.companyName.slice(0, 2)}
+                  </div>
+                )}
                 <p className="mt-2 text-(--text-label) font-semibold text-foreground sm:mt-3">
                   {productA.companyName}
                 </p>
@@ -130,13 +136,19 @@ export default function CompareModal({
 
               {/* B */}
               <div className="flex min-w-0 flex-1 flex-col items-center text-center">
-                <Image
-                  src={logoB}
-                  alt={productB.companyName}
-                  width={80}
-                  height={80}
-                  className="h-[48px] w-[48px] rounded-full sm:h-[80px] sm:w-[80px]"
-                />
+                {logoB ? (
+                  <Image
+                    src={logoB}
+                    alt={productB.companyName}
+                    width={80}
+                    height={80}
+                    className="h-[48px] w-[48px] rounded-full sm:h-[80px] sm:w-[80px]"
+                  />
+                ) : (
+                  <div className="flex h-[48px] w-[48px] items-center justify-center rounded-full bg-gray-100 text-(--text-body-sm) font-bold text-sub-text sm:h-[80px] sm:w-[80px]">
+                    {productB.companyName.slice(0, 2)}
+                  </div>
+                )}
                 <p className="mt-2 text-(--text-label) font-semibold text-foreground sm:mt-3">
                   {productB.companyName}
                 </p>

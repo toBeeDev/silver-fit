@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useMemo, useCallback } from "react";
-import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { ArrowUpDown, Search } from "lucide-react";
 import InsuranceFilter from "@/components/insurance/InsuranceFilter";
 import InsuranceProductCard from "@/components/insurance/InsuranceProductCard";
@@ -12,29 +12,33 @@ import { filterInsuranceProducts } from "@/lib/insurance-filter";
 import { useQueryStates } from "@/lib/use-query-state";
 import type { InsuranceProduct, InsuranceCategory } from "@/types/insurance";
 
-const CompareModal = dynamic(
-  () => import("@/components/insurance/CompareModal"),
-  { ssr: false },
-);
 import { cn } from "@/lib/utils";
 
 const AGE_PRESETS = [60, 65, 70, 75] as const;
 const PAGE_SIZE = 10;
-const MAX_COMPARE = 2;
+const MAX_COMPARE = 3;
 
-type SortOrder = "default" | "rate-desc" | "rate-asc";
+type SortOrder = "default" | "rate-desc" | "rate-asc" | "premium-asc" | "premium-desc";
 
 const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
   { value: "default", label: "기본순" },
   { value: "rate-desc", label: "수익률 높은순" },
   { value: "rate-asc", label: "수익률 낮은순" },
+  { value: "premium-asc", label: "보험료 낮은순" },
+  { value: "premium-desc", label: "보험료 높은순" },
 ];
 
 interface InsuranceCompareClientProps {
   products: InsuranceProduct[];
 }
 
-const QS_DEFAULTS = { cat: "전체", age: "", q: "", sort: "default", page: "1" };
+const GENDER_OPTIONS = [
+  { value: "", label: "전체" },
+  { value: "m", label: "남성" },
+  { value: "f", label: "여성" },
+] as const;
+
+const QS_DEFAULTS = { cat: "전체", age: "", gender: "", q: "", sort: "default", page: "1" };
 
 export default function InsuranceCompareClient({
   products,
@@ -43,17 +47,18 @@ export default function InsuranceCompareClient({
 
   const selectedCategory = qs.cat as InsuranceCategory | "전체";
   const selectedAge = qs.age ? Number(qs.age) : undefined;
+  const selectedGender = qs.gender as "" | "m" | "f";
   const searchQuery = qs.q;
   const sortOrder = qs.sort as SortOrder;
   const currentPage = Math.max(1, Number(qs.page) || 1);
 
+  const router = useRouter();
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const HEADER_HEIGHT = 64; // h-16
 
   // 비교 상태
   const [compareIds, setCompareIds] = useState<string[]>([]);
-  const [showModal, setShowModal] = useState(false);
 
   const toggleCompare = useCallback(
     (id: string) => {
@@ -72,8 +77,13 @@ export default function InsuranceCompareClient({
 
   const clearCompare = useCallback(() => {
     setCompareIds([]);
-    setShowModal(false);
   }, []);
+
+  const goToCompare = useCallback(() => {
+    if (compareIds.length >= 2) {
+      router.push(`/insurance/compare?ids=${compareIds.join(",")}`);
+    }
+  }, [compareIds, router]);
 
   const compareProducts = useMemo(
     () =>
@@ -135,9 +145,15 @@ export default function InsuranceCompareClient({
       result = [...result].sort((a, b) => (b.avgPrftRate ?? 0) - (a.avgPrftRate ?? 0));
     } else if (sortOrder === "rate-asc") {
       result = [...result].sort((a, b) => (a.avgPrftRate ?? 0) - (b.avgPrftRate ?? 0));
+    } else if (sortOrder === "premium-asc") {
+      const getPremium = (p: InsuranceProduct) => selectedGender === "f" ? p.premium65f : p.premium65m;
+      result = [...result].sort((a, b) => (getPremium(a) ?? Infinity) - (getPremium(b) ?? Infinity));
+    } else if (sortOrder === "premium-desc") {
+      const getPremium = (p: InsuranceProduct) => selectedGender === "f" ? p.premium65f : p.premium65m;
+      result = [...result].sort((a, b) => (getPremium(b) ?? 0) - (getPremium(a) ?? 0));
     }
     return result;
-  }, [products, selectedCategory, selectedAge, searchQuery, sortOrder]);
+  }, [products, selectedCategory, selectedAge, selectedGender, searchQuery, sortOrder]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paged = useMemo(
@@ -235,6 +251,32 @@ export default function InsuranceCompareClient({
               </div>
             </div>
 
+            {/* 성별 */}
+            <div className="mt-4 sm:mt-6">
+              <p className="mb-2 text-(--text-body-sm) font-medium text-foreground sm:mb-3">
+                성별
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {GENDER_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => {
+                      setQs({ gender: opt.value, page: "1" });
+                      scrollToResults();
+                    }}
+                    className={cn(
+                      "inline-flex min-h-(--min-tap) items-center rounded-full px-3 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
+                      selectedGender === opt.value
+                        ? "bg-primary-700 text-white"
+                        : "border border-border text-sub-text hover:border-foreground/30 hover:text-foreground",
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* 검색바 */}
             <div className="mt-4 sm:mt-6">
               <p className="mb-2 text-(--text-body-sm) font-medium text-foreground sm:mb-3">
@@ -318,7 +360,7 @@ export default function InsuranceCompareClient({
         <div className="mt-3 flex flex-col gap-1.5 text-(--text-caption) text-sub-text">
           <p className="inline-flex items-center gap-1.5 text-(--text-body-sm) font-medium text-primary-700">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-100 text-[10px]">VS</span>
-            체크 버튼으로 2개 상품을 선택하면 비교가 가능합니다
+            체크 버튼으로 2~3개 상품을 선택하면 비교가 가능합니다
           </p>
           <p>금감원 금융상품한눈에 공시 데이터 기준 (2020.10)</p>
         </div>
@@ -344,6 +386,7 @@ export default function InsuranceCompareClient({
                     index={(currentPage - 1) * PAGE_SIZE + i}
                     selected={compareIds.includes(product.id)}
                     onToggle={toggleCompare}
+                    gender={selectedGender || undefined}
                   />
                 ))}
               </div>
@@ -362,20 +405,12 @@ export default function InsuranceCompareClient({
       {/* 비교 바 */}
       <CompareBar
         items={compareItems}
+        maxItems={MAX_COMPARE}
+        minItems={2}
         onRemove={removeCompare}
-        onCompare={() => setShowModal(true)}
+        onCompare={goToCompare}
         onClear={clearCompare}
       />
-
-      {/* 비교 모달 */}
-      {compareProducts.length === 2 && (
-        <CompareModal
-          open={showModal}
-          onClose={() => setShowModal(false)}
-          productA={compareProducts[0]}
-          productB={compareProducts[1]}
-        />
-      )}
     </div>
   );
 }

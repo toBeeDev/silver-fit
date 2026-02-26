@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { getBenefitBySlug, getAllBenefitSlugs } from "@/lib/welfare-api";
-import { MoveLeft } from "lucide-react";
+import { MoveLeft, ArrowRight, Shield } from "lucide-react";
 
 interface BenefitDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -204,6 +204,30 @@ export default async function BenefitDetailPage({
             </div>
           </div>
         )}
+
+        {/* 보험상품 추천 CTA */}
+        <div className="mt-12 rounded-2xl border border-primary-200 bg-gradient-to-br from-primary-50 to-blue-50 p-6 sm:p-8">
+          <div className="flex items-start gap-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 sm:h-12 sm:w-12">
+              <Shield className="h-5 w-5 text-primary-700 sm:h-6 sm:w-6" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-[17px] font-semibold text-foreground sm:text-[19px]">
+                복지혜택과 함께 보험도 비교해보세요
+              </h3>
+              <p className="mt-2 text-[15px] leading-relaxed text-sub-text">
+                간병보험, 치매보험, 실손보험, 연금저축보험 등 어르신을 위한 보험상품을 한눈에 비교할 수 있습니다.
+              </p>
+              <Link
+                href="/insurance"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-primary-700 px-5 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-primary-800"
+              >
+                보험상품 비교하기
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
       </article>
     </div>
   );

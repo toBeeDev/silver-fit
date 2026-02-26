@@ -3,7 +3,7 @@
 import CategoryFilter from "@/components/ui/CategoryFilter";
 import type { InsuranceCategory } from "@/types/insurance";
 
-const CATEGORIES = ["전체", "연금저축보험"] as const;
+const CATEGORIES = ["전체", "간병보험", "치매보험", "실손보험", "연금저축보험"] as const;
 
 export interface InsuranceFilterProps {
   selected: InsuranceCategory | "전체";
