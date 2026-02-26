@@ -50,11 +50,11 @@ export default function CompareBar({
                 >
                   <div className="min-w-0">
                     {item.subtitle && (
-                      <p className="truncate text-(--text-caption) text-sub-text">
+                      <p className="truncate text-caption text-sub-text">
                         {item.subtitle}
                       </p>
                     )}
-                    <p className="truncate text-(--text-label) font-medium text-foreground">
+                    <p className="truncate text-label font-medium text-foreground">
                       {item.title}
                     </p>
                   </div>
@@ -69,7 +69,7 @@ export default function CompareBar({
               ))}
 
               {emptySlots > 0 && (
-                <div className="flex h-[36px] shrink-0 items-center rounded-lg border-2 border-dashed border-border px-2.5 text-(--text-label) text-sub-text sm:h-(--min-tap)">
+                <div className="flex h-[36px] shrink-0 items-center rounded-lg border-2 border-dashed border-border px-2.5 text-label text-sub-text sm:h-(--min-tap)">
                   +{emptySlots}
                 </div>
               )}
@@ -78,14 +78,14 @@ export default function CompareBar({
             <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
               <button
                 onClick={onClear}
-                className="rounded-lg px-2 py-1.5 text-(--text-label) text-sub-text transition-colors hover:bg-gray-100 sm:px-3 sm:py-2"
+                className="rounded-lg px-2 py-1.5 text-label text-sub-text transition-colors hover:bg-gray-100 sm:px-3 sm:py-2"
               >
                 초기화
               </button>
               <button
                 onClick={onCompare}
                 disabled={!canCompare}
-                className="inline-flex min-h-[36px] items-center rounded-xl bg-primary-700 px-3 text-(--text-btn) font-medium text-white transition-colors hover:bg-primary-800 disabled:bg-gray-200 disabled:text-gray-400 sm:min-h-(--min-tap) sm:px-5"
+                className="inline-flex min-h-[36px] items-center rounded-xl bg-primary-700 px-3 text-btn font-medium text-white transition-colors hover:bg-primary-800 disabled:bg-gray-200 disabled:text-gray-400 sm:min-h-(--min-tap) sm:px-5"
               >
                 {compareLabel}
               </button>

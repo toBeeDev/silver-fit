@@ -54,10 +54,10 @@ export default memo(function InsuranceProductCard({
       >
         {/* 1행: 상품명 + 핵심 수치 */}
         <div className="flex items-center gap-2">
-          <h3 className="min-w-0 flex-1 truncate text-(--text-card-title) font-semibold leading-snug text-foreground">
+          <h3 className="min-w-0 flex-1 truncate text-card-title font-semibold leading-snug text-foreground">
             {product.productName}
           </h3>
-          <span className="shrink-0 text-(--text-number) font-bold tabular-nums text-foreground">
+          <span className="shrink-0 text-number font-bold tabular-nums text-foreground">
             {isPension
               ? product.avgPrftRate != null
                 ? `${product.avgPrftRate}%`
@@ -80,11 +80,11 @@ export default memo(function InsuranceProductCard({
               className="h-[18px] w-[18px] shrink-0 rounded-full"
             />
           )}
-          <p className="text-(--text-body-sm) leading-snug text-sub-text">
+          <p className="text-body-sm leading-snug text-sub-text">
             {product.companyName}
           </p>
           {!isPension && (
-            <span className="text-(--text-caption) text-sub-text/60">
+            <span className="text-caption text-sub-text/60">
               · 65세 {gender === "f" ? "여성" : "남성"} 기준
             </span>
           )}
@@ -92,16 +92,16 @@ export default memo(function InsuranceProductCard({
 
         {/* 3행: 태그 */}
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-          <span className="inline-flex items-center rounded-full border border-border/60 px-2 py-0.5 text-(--text-caption) font-medium text-sub-text">
+          <span className="inline-flex items-center rounded-full border border-border/60 px-2 py-0.5 text-caption font-medium text-sub-text">
             {product.category}
           </span>
           {isPension && product.coverage && (
-            <span className="inline-flex items-center rounded-full border border-border/60 px-2 py-0.5 text-(--text-caption) font-medium text-sub-text">
+            <span className="inline-flex items-center rounded-full border border-border/60 px-2 py-0.5 text-caption font-medium text-sub-text">
               {product.coverage.split(" / ")[1] ?? product.coverage}
             </span>
           )}
           {product.contractType && (
-            <span className="inline-flex items-center rounded-full border border-border/60 px-2 py-0.5 text-(--text-caption) font-medium text-sub-text">
+            <span className="inline-flex items-center rounded-full border border-border/60 px-2 py-0.5 text-caption font-medium text-sub-text">
               {product.contractType === "renewal" ? "갱신형" : "비갱신형"}
             </span>
           )}

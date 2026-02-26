@@ -18,7 +18,7 @@ export default function CategoryFilter<T extends string>({
   return (
     <nav aria-label={ariaLabel}>
       <ul
-        className="flex gap-2 overflow-x-auto pb-2 scrollbar-none"
+        className="flex gap-1.5 overflow-x-auto scrollbar-none"
         role="tablist"
       >
         {categories.map((category) => (
@@ -28,16 +28,13 @@ export default function CategoryFilter<T extends string>({
               aria-selected={selected === category}
               onClick={() => onSelect(category)}
               className={cn(
-                "inline-flex min-h-(--min-tap) items-center gap-1.5 rounded-full px-3 text-(--text-btn) font-medium transition-all duration-200 sm:px-5",
+                "inline-flex items-center rounded-full px-3 py-1 text-caption font-medium transition-all duration-200 sm:px-3.5 sm:py-1.5 sm:text-label",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2",
                 selected === category
                   ? "bg-primary-700 text-white"
-                  : "border border-border bg-transparent text-sub-text hover:border-foreground/30 hover:text-foreground",
+                  : "bg-gray-100 text-sub-text hover:bg-gray-200 hover:text-foreground",
               )}
             >
-              {selected === category && (
-                <span className="h-1.5 w-1.5 rounded-full bg-white" />
-              )}
               {category}
             </button>
           </li>
