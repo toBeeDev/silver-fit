@@ -216,7 +216,7 @@ export default async function BenefitDetailPage({
                 복지혜택과 함께 보험도 비교해보세요
               </h3>
               <p className="mt-2 text-[15px] leading-relaxed text-sub-text">
-                간병보험, 치매보험, 실손보험, 연금저축보험 등 어르신을 위한 보험상품을 한눈에 비교할 수 있습니다.
+                간병보험, 치매보험, 실손보험, 연금저축보험 등 부모님을 위한 보험상품을 한눈에 비교할 수 있습니다.
               </p>
               <Link
                 href="/insurance"

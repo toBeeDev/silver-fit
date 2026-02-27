@@ -260,24 +260,24 @@ export default function HealthCheckAnalyzer() {
           <div className="shrink-0 sm:w-[280px]">
             <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs font-medium text-sub-text">
               <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
-              Health Analysis
+              AI Health Analysis
             </span>
             <h1 className="mt-4 text-3xl font-normal tracking-tight text-foreground sm:mt-6 sm:text-4xl md:text-5xl">
-              검진결과
+              AI 검진
               <br />
               분석
             </h1>
             <p className="mt-4 text-[17px] leading-relaxed text-sub-text">
-              검진 결과표를 올리시면,
+              검진 결과표를 올리면,
               <br className="hidden sm:block" />
-              쉬운 말로 설명해드립니다
+              AI가 쉬운 말로 설명해드려요
             </p>
 
             {/* Trust indicators */}
             <div className="mt-8 hidden flex-col gap-3 sm:flex">
               {[
                 "이미지·PDF 파일 지원",
-                "AI 기반 수치 해석",
+                "AI 수치 해석",
                 "개인정보 서버 미저장",
               ].map((text) => (
                 <span
@@ -385,7 +385,7 @@ export default function HealthCheckAnalyzer() {
 
             {loading && (
               <p className="mt-4 text-center text-[14px] text-sub-text">
-                AI가 검진 결과를 읽고 설명을 작성하고 있어요 (10~30초 소요)
+                AI가 검진 결과를 분석하고 있어요 (10~30초 소요)
               </p>
             )}
 
@@ -432,9 +432,9 @@ export default function HealthCheckAnalyzer() {
                 결과
               </h2>
               <p className="mt-4 text-[17px] leading-relaxed text-sub-text">
-                검진 결과를 쉬운 말로
+                AI가 검진 결과를
                 <br className="hidden sm:block" />
-                설명해드렸어요
+                쉬운 말로 정리했어요
               </p>
 
               <div className="mt-8 flex flex-col gap-3">

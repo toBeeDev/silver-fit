@@ -44,7 +44,7 @@ export default function HomePage() {
             <p className="mt-4 text-[17px] leading-relaxed text-sub-text">
               가장 많이 찾는
               <br className="hidden sm:block" />
-              어르신 복지혜택을 확인하세요
+              부모님 복지혜택을 확인하세요
             </p>
             <div className="mt-8 hidden sm:block">
               <Link href="/benefits">

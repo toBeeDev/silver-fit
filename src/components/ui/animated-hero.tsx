@@ -74,7 +74,7 @@ function AnimatedHero() {
           </motion.span>
 
           <h1 className="mt-6 text-3xl font-normal tracking-tight text-foreground sm:text-4xl md:text-6xl lg:text-7xl">
-            어르신을 위한
+            부모님을 위한
             <span className="relative block h-[1.4em] overflow-hidden sm:h-[1.3em] md:h-[1.25em]">
               {titles.map((title, index) => (
                 <motion.span
@@ -98,9 +98,9 @@ function AnimatedHero() {
           </h1>
 
           <p className="mt-6 max-w-lg text-[17px] leading-relaxed text-sub-text md:text-lg">
-            나이, 지역, 소득만 입력하면 받을 수 있는 혜택을 자동으로
-            찾아드립니다. 기초연금부터 돌봄서비스까지, 놓치는 혜택 없이
-            챙기세요.
+            나이, 지역, 소득만 입력하면 부모님이 받을 수 있는 혜택을
+            자동으로 찾아드립니다. 기초연금부터 돌봄서비스까지, 놓치는
+            혜택 없이 챙기세요.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
