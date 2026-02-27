@@ -9,8 +9,9 @@ import { Menu, X } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/benefits", label: "복지혜택" },
-  { href: "/analysis", label: "AI 검진분석" },
   { href: "/insurance", label: "보험상품찾기" },
+  { href: "/analysis", label: "AI 검진분석" },
+  { href: "/chat", label: "AI 상담" },
 ];
 
 export default function Header() {
