@@ -19,7 +19,7 @@ export default function Footer() {
       ]}
       mainLinks={[
         { href: "/benefits", label: "복지혜택" },
-        { href: "/recommend", label: "맞춤추천" },
+        { href: "/insurance", label: "보험상품찾기" },
         { href: "https://www.bokjiro.go.kr", label: "복지로 바로가기" },
       ]}
       copyright={{

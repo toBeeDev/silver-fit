@@ -438,7 +438,7 @@ export default function HealthCheckAnalyzer() {
               </p>
 
               <div className="mt-8 flex flex-col gap-3">
-                <Link href="/recommend">
+                <Link href="/benefits">
                   <Button variant="outline" className="gap-4">
                     복지혜택 확인하기 <MoveRight className="h-4 w-4" />
                   </Button>
