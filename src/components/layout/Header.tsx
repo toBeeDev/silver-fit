@@ -9,7 +9,7 @@ import { Menu, X } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/benefits", label: "복지혜택" },
-  { href: "/analysis", label: "검진결과분석" },
+  { href: "/analysis", label: "AI 검진분석" },
   { href: "/insurance", label: "보험상품찾기" },
 ];
 

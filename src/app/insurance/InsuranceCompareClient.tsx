@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useMemo, useCallback } from "react";
-import { Search } from "lucide-react";
+import { Search, Users, ArrowUpDown } from "lucide-react";
 import InsuranceFilter from "@/components/insurance/InsuranceFilter";
 import InsuranceProductCard from "@/components/insurance/InsuranceProductCard";
 import CompareBar from "@/components/common/CompareBar";
@@ -18,19 +18,39 @@ const PAGE_SIZE = 10;
 const MAX_COMPARE = 3;
 
 type SortOrder =
-  | "default"
   | "rate-desc"
   | "rate-asc"
   | "premium-asc"
   | "premium-desc";
 
-const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
-  { value: "default", label: "기본순" },
+type SortOption = { value: SortOrder; label: string };
+
+const RATE_SORT_OPTIONS: SortOption[] = [
   { value: "rate-desc", label: "수익률 높은순" },
   { value: "rate-asc", label: "수익률 낮은순" },
+];
+
+const PREMIUM_SORT_OPTIONS: SortOption[] = [
   { value: "premium-asc", label: "보험료 낮은순" },
   { value: "premium-desc", label: "보험료 높은순" },
 ];
+
+const ALL_SORT_OPTIONS: SortOption[] = [
+  ...RATE_SORT_OPTIONS,
+  ...PREMIUM_SORT_OPTIONS,
+];
+
+function getDefaultSort(category: InsuranceCategory | "전체"): SortOrder {
+  if (category === "연금저축보험") return "rate-desc";
+  if (category === "전체") return "rate-desc";
+  return "premium-asc";
+}
+
+function getSortOptions(category: InsuranceCategory | "전체"): SortOption[] {
+  if (category === "연금저축보험") return RATE_SORT_OPTIONS;
+  if (category === "전체") return ALL_SORT_OPTIONS;
+  return PREMIUM_SORT_OPTIONS;
+}
 
 interface InsuranceCompareClientProps {
   products: InsuranceProduct[];
@@ -46,7 +66,7 @@ const QS_DEFAULTS = {
   cat: "전체",
   gender: "",
   q: "",
-  sort: "default",
+  sort: "rate-desc",
   page: "1",
 };
 
@@ -118,7 +138,7 @@ export default function InsuranceCompareClient({
   }
 
   function handleCategoryChange(category: InsuranceCategory | "전체") {
-    setQs({ cat: category, page: "1" });
+    setQs({ cat: category, sort: getDefaultSort(category), page: "1" });
     scrollToResults();
   }
 
@@ -159,11 +179,6 @@ export default function InsuranceCompareClient({
       result = [...result].sort(
         (a, b) => (getPremium(b) ?? 0) - (getPremium(a) ?? 0),
       );
-    } else if (selectedGender) {
-      // 기본순 + 성별 선택 시 해당 성별 보험료 낮은순 정렬
-      result = [...result].sort(
-        (a, b) => (getPremium(a) ?? Infinity) - (getPremium(b) ?? Infinity),
-      );
     }
     return result;
   }, [
@@ -173,6 +188,11 @@ export default function InsuranceCompareClient({
     searchQuery,
     sortOrder,
   ]);
+
+  const visibleSortOptions = useMemo(
+    () => getSortOptions(selectedCategory),
+    [selectedCategory],
+  );
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paged = useMemo(
@@ -221,28 +241,33 @@ export default function InsuranceCompareClient({
         />
 
         {/* 성별 */}
-        <div className="flex items-center gap-2">
-          <span className="w-8 shrink-0 text-caption font-medium text-sub-text sm:text-body-sm">
-            성별
-          </span>
-          <div className="flex gap-1">
-            {GENDER_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => {
-                  setQs({ gender: opt.value, page: "1" });
-                  scrollToResults();
-                }}
-                className={cn(
-                  "rounded-full px-2.5 py-0.5 text-caption font-medium transition-all sm:px-3 sm:py-1 sm:text-label",
-                  selectedGender === opt.value
-                    ? "bg-primary-700 text-white"
-                    : "bg-gray-100 text-sub-text hover:bg-gray-200",
-                )}
-              >
-                {opt.label}
-              </button>
-            ))}
+        <div className="rounded-xl border border-border bg-white">
+          <div className="flex items-center gap-2.5 px-3.5 py-2.5 sm:px-4">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary-50">
+              <Users className="h-3.5 w-3.5 text-primary-600" />
+            </div>
+            <span className="shrink-0 text-body-sm font-medium text-sub-text">
+              성별
+            </span>
+            <div className="flex gap-1">
+              {GENDER_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => {
+                    setQs({ gender: opt.value, page: "1" });
+                    scrollToResults();
+                  }}
+                  className={cn(
+                    "rounded-full px-2.5 py-0.5 text-caption font-medium transition-all sm:px-3 sm:py-1 sm:text-label",
+                    selectedGender === opt.value
+                      ? "bg-primary-700 text-white"
+                      : "bg-gray-100 text-sub-text hover:bg-gray-200",
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -265,7 +290,8 @@ export default function InsuranceCompareClient({
         </div>
 
         <div className="flex items-center gap-0.5 sm:gap-1">
-          {SORT_OPTIONS.map((opt) => (
+          <ArrowUpDown className="h-3.5 w-3.5 text-sub-text" />
+          {visibleSortOptions.map((opt) => (
             <button
               key={opt.value}
               onClick={() => setQs({ sort: opt.value, page: "1" })}

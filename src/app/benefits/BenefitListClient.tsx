@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Search } from "lucide-react";
+import { Search, User, MapPin, Wallet, ChevronDown } from "lucide-react";
 import BenefitFilter from "@/components/benefits/BenefitFilter";
 import BenefitList from "@/components/benefits/BenefitList";
 import { filterBenefits } from "@/lib/benefits";
@@ -85,7 +85,7 @@ export default function BenefitListClient({
             복지혜택
           </h1>
           <p className="mt-1 text-body-sm text-sub-text">
-            어르신을 위한 맞춤 복지혜택 · {benefits.length}개
+            부모님을 위한 맞춤 복지혜택 · {benefits.length}개
           </p>
         </div>
         <form
@@ -112,55 +112,75 @@ export default function BenefitListClient({
         />
 
         {/* 맞춤 필터: 나이, 지역, 소득 */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <div className="flex items-center gap-2">
-            <span className="shrink-0 text-caption font-medium text-sub-text sm:text-body-sm">
-              나이
-            </span>
-            <input
-              type="number"
-              inputMode="numeric"
-              min={0}
-              max={120}
-              placeholder="만 나이"
-              value={qs.age}
-              onChange={(e) => setQs({ age: e.target.value })}
-              className="h-8 w-[72px] rounded-lg border border-border bg-white px-2.5 text-body-sm tabular-nums text-foreground placeholder:text-sub-text/50 focus:border-primary-400 focus:outline-none sm:h-9"
-            />
-          </div>
+        <div className="rounded-xl border border-border bg-white">
+          <div className="flex flex-col divide-y divide-border/60 sm:flex-row sm:divide-x sm:divide-y-0">
+            {/* 나이 */}
+            <div className="flex flex-1 items-center gap-2.5 px-3.5 py-2.5 sm:px-4">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary-50">
+                <User className="h-3.5 w-3.5 text-primary-600" />
+              </div>
+              <span className="shrink-0 text-body-sm font-medium text-sub-text">
+                나이
+              </span>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={120}
+                placeholder="만 나이 입력"
+                value={qs.age}
+                onChange={(e) => setQs({ age: e.target.value })}
+                className="w-full min-w-0 bg-transparent text-body-sm tabular-nums text-foreground placeholder:text-sub-text/40 focus:outline-none"
+              />
+            </div>
 
-          <div className="flex items-center gap-2">
-            <span className="shrink-0 text-caption font-medium text-sub-text sm:text-body-sm">
-              지역
-            </span>
-            <select
-              value={qs.region}
-              onChange={(e) => setQs({ region: e.target.value })}
-              className="h-8 rounded-lg border border-border bg-white px-2 pr-7 text-body-sm text-foreground focus:border-primary-400 focus:outline-none sm:h-9"
-            >
-              {REGION_OPTIONS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* 지역 */}
+            <div className="flex flex-1 items-center gap-2.5 px-3.5 py-2.5 sm:px-4">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50">
+                <MapPin className="h-3.5 w-3.5 text-emerald-600" />
+              </div>
+              <span className="shrink-0 text-body-sm font-medium text-sub-text">
+                지역
+              </span>
+              <div className="relative flex-1">
+                <select
+                  value={qs.region}
+                  onChange={(e) => setQs({ region: e.target.value })}
+                  className="w-full appearance-none bg-transparent pr-5 text-body-sm text-foreground focus:outline-none"
+                >
+                  {REGION_OPTIONS.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-0 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-sub-text/60" />
+              </div>
+            </div>
 
-          <div className="flex items-center gap-2">
-            <span className="shrink-0 text-caption font-medium text-sub-text sm:text-body-sm">
-              소득
-            </span>
-            <select
-              value={qs.income}
-              onChange={(e) => setQs({ income: e.target.value })}
-              className="h-8 rounded-lg border border-border bg-white px-2 pr-7 text-body-sm text-foreground focus:border-primary-400 focus:outline-none sm:h-9"
-            >
-              {INCOME_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+            {/* 소득 */}
+            <div className="flex flex-1 items-center gap-2.5 px-3.5 py-2.5 sm:px-4">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-50">
+                <Wallet className="h-3.5 w-3.5 text-amber-600" />
+              </div>
+              <span className="shrink-0 text-body-sm font-medium text-sub-text">
+                소득
+              </span>
+              <div className="relative flex-1">
+                <select
+                  value={qs.income}
+                  onChange={(e) => setQs({ income: e.target.value })}
+                  className="w-full appearance-none bg-transparent pr-5 text-body-sm text-foreground focus:outline-none"
+                >
+                  {INCOME_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-0 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-sub-text/60" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
