@@ -28,7 +28,7 @@ export default function CategoryFilter<T extends string>({
               aria-selected={selected === category}
               onClick={() => onSelect(category)}
               className={cn(
-                "inline-flex items-center rounded-full px-3 py-1 text-caption font-medium transition-all duration-200 sm:px-3.5 sm:py-1.5 sm:text-label",
+                "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-medium transition-all duration-200 sm:px-3.5 sm:py-1.5 sm:text-label",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2",
                 selected === category
                   ? "bg-primary-700 text-white"

@@ -258,7 +258,7 @@ export default function InsuranceCompareClient({
                     scrollToResults();
                   }}
                   className={cn(
-                    "rounded-full px-2.5 py-0.5 text-caption font-medium transition-all sm:px-3 sm:py-1 sm:text-label",
+                    "whitespace-nowrap rounded-full px-2.5 py-0.5 text-[12px] font-medium transition-all sm:px-3 sm:py-1 sm:text-label",
                     selectedGender === opt.value
                       ? "bg-primary-700 text-white"
                       : "bg-gray-100 text-sub-text hover:bg-gray-200",
@@ -290,13 +290,13 @@ export default function InsuranceCompareClient({
         </div>
 
         <div className="flex items-center gap-0.5 sm:gap-1">
-          <ArrowUpDown className="h-3.5 w-3.5 text-sub-text" />
+          <ArrowUpDown className="h-3 w-3 shrink-0 text-sub-text sm:h-3.5 sm:w-3.5" />
           {visibleSortOptions.map((opt) => (
             <button
               key={opt.value}
               onClick={() => setQs({ sort: opt.value, page: "1" })}
               className={cn(
-                "rounded-full px-2 py-0.5 text-caption font-medium transition-all sm:px-2.5 sm:py-1 sm:text-label",
+                "whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium transition-all sm:px-2.5 sm:py-1 sm:text-label",
                 sortOrder === opt.value
                   ? "bg-primary-700 text-white"
                   : "text-sub-text hover:text-foreground",
