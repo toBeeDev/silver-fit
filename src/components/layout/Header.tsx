@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Button from "@/components/ui/Button";
+import AuthButton from "@/components/layout/AuthButton";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 
@@ -12,6 +13,7 @@ const NAV_ITEMS = [
   { href: "/insurance", label: "보험상품찾기" },
   { href: "/analysis", label: "AI 검진분석" },
   { href: "/chat", label: "AI 상담" },
+  { href: "/community", label: "커뮤니티" },
 ];
 
 export default function Header() {
@@ -89,21 +91,27 @@ export default function Header() {
               </Link>
             );
           })}
+          <div className="ml-1">
+            <AuthButton />
+          </div>
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          onClick={toggleMenu}
-          className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-primary-50 sm:hidden"
-          aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
-          aria-expanded={menuOpen}
-        >
+        {/* Mobile: auth + hamburger */}
+        <div className="flex items-center gap-2 sm:hidden">
+          <AuthButton />
+          <button
+            onClick={toggleMenu}
+            className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-primary-50"
+            aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={menuOpen}
+          >
           {menuOpen ? (
             <X className="h-5 w-5 text-foreground" />
           ) : (
             <Menu className="h-5 w-5 text-foreground" />
           )}
-        </button>
+          </button>
+        </div>
       </nav>
 
       {/* Mobile dropdown menu */}
