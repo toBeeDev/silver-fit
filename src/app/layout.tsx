@@ -23,9 +23,18 @@ export const metadata: Metadata = {
     locale: "ko_KR",
     type: "website",
     url: BASE_URL,
+    images: [
+      {
+        url: "/silverfit.png",
+        width: 1200,
+        height: 630,
+        alt: "SilverFit - 노인 복지혜택 맞춤 추천",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    images: ["/silverfit.png"],
   },
 };
 
