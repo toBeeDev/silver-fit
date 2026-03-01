@@ -29,6 +29,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <meta name="naver-site-verification" content="b96a84ea8eb36e0e84c7514f769ac84e6028dfc2" />
+      </head>
       <body className="font-sans antialiased">
         <ScrollToTop />
         <HeaderWrapper />
