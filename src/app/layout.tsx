@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   description:
     "나이, 지역, 소득만 입력하면 받을 수 있는 복지혜택을 한눈에. 기초연금, 장기요양, 돌봄서비스 등 부모님 맞춤 혜택을 확인하세요.",
   keywords: ["노인 복지", "복지혜택", "기초연금", "노인일자리", "실버복지", "시니어 보험", "AI 검진분석"],
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
   openGraph: {
     siteName: "SilverFit",
     locale: "ko_KR",
