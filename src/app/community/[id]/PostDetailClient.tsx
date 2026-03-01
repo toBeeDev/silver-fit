@@ -194,18 +194,6 @@ export default function PostDetailClient() {
           {/* 작성자 정보 */}
           <div className="mt-3 flex items-center justify-between border-b border-border pb-3">
             <div className="flex items-center gap-2">
-              {post.profiles?.avatar_url ? (
-                <img
-                  src={post.profiles.avatar_url}
-                  alt=""
-                  className="h-7 w-7 rounded-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-100 text-[11px] font-bold text-primary-600">
-                  {(post.profiles?.nickname ?? "U")[0]}
-                </div>
-              )}
               <span className="text-body-sm font-medium text-foreground">
                 {maskNickname(post.profiles?.nickname ?? "사용자")}
               </span>
@@ -254,18 +242,6 @@ export default function PostDetailClient() {
               <div key={comment.id} className="px-4 py-3 sm:px-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    {comment.profiles?.avatar_url ? (
-                      <img
-                        src={comment.profiles.avatar_url}
-                        alt=""
-                        className="h-6 w-6 rounded-full object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-[10px] font-bold text-primary-600">
-                        {(comment.profiles?.nickname ?? "U")[0]}
-                      </div>
-                    )}
                     <span className="text-body-sm font-medium text-foreground">
                       {maskNickname(comment.profiles?.nickname ?? "사용자")}
                     </span>

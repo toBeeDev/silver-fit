@@ -118,7 +118,7 @@ export default function Header() {
       <div
         className={cn(
           "overflow-hidden border-b border-border bg-background transition-all duration-300 ease-in-out sm:hidden",
-          menuOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0 border-transparent",
+          menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0 border-transparent",
         )}
       >
         <div className="flex flex-col gap-1 px-5 pb-4 pt-2">
